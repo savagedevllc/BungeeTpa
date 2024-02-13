@@ -1,6 +1,4 @@
 # BungeeTP  
-Welcome to your new project!
-
 This plugin brings a new dimension to teleportation, providing seamless and efficient teleport commands for players navigating across your Waterfall/Velocity network.
 
 
