@@ -1,0 +1,21 @@
+# Project exclude paths
+/.gradle/
+/bungee/build/
+/bungee/build/classes/java/main/
+/spigot/build/
+/spigot/build/classes/java/main/
+# Project exclude paths
+/bridge/common/build/
+/bridge/common/build/classes/java/main/
+/bridge/spigot/build/
+/bridge/spigot/build/classes/java/main/
+/bridge/sponge/build/
+/bridge/sponge/build/classes/java/main/
+/common/build/
+/common/build/classes/java/main/
+/plugin/bungee/build/
+/plugin/bungee/build/classes/java/main/
+/plugin/common/build/
+/plugin/common/build/classes/java/main/
+/plugin/velocity/build/
+/plugin/velocity/build/classes/java/main/

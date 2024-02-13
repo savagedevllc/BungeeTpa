@@ -1,0 +1,10 @@
+rootProject.name = 'BungeeTpa'
+
+include 'common'
+include 'bridge:common'
+include 'bridge:spigot'
+include 'bridge:sponge'
+include 'plugin:bungee'
+include 'plugin:common'
+include 'plugin:velocity'
+

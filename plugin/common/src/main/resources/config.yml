@@ -1,0 +1,13 @@
+# How long the player will have to wait before being teleported.
+delay: 3 # Seconds
+
+# How long it will take for teleport requests to expire.
+expire: 180 # Seconds
+
+# How should times be formatted? (LONG: "hours", "minutes", "seconds" or SHORT: "h", "m", "s")
+time-format: LONG
+
+# A list of servers that players will not be allowed to teleport to.
+blacklist:
+  - build
+  - events

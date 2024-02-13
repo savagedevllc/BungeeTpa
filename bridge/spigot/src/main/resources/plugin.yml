@@ -1,0 +1,8 @@
+name: BungeeTp
+description: Teleport across a BungeeCord network.
+
+author: SavageAvocado.
+website: savagedev.net
+
+main: net.savagedev.tpa.spigot.BungeeTpSpigotPlugin
+version: ${version}

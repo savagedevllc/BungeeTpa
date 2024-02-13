@@ -1,0 +1,5 @@
+name: BungeeTp
+version: ${version}
+
+main: net.savagedev.tpa.bungee.BungeeTpBungeePlugin
+author: SavageAvocado
