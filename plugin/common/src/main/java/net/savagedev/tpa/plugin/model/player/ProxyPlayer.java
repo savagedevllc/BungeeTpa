@@ -5,6 +5,8 @@ import net.savagedev.tpa.plugin.model.server.Server;
 import java.util.UUID;
 
 public interface ProxyPlayer<T, M> {
+    void setHidden(boolean hidden);
+
     void sendMessage(String message);
 
     void sendMessage(M message);
@@ -14,6 +16,8 @@ public interface ProxyPlayer<T, M> {
     boolean hasPermission(String permission);
 
     boolean isConnected();
+
+    boolean notHidden();
 
     Server<?> getCurrentServer();
 

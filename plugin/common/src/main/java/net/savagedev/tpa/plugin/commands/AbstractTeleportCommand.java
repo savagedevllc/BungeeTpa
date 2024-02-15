@@ -49,10 +49,17 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
 
     @Override
     public Collection<String> complete(ProxyPlayer<?, ?> player, String[] args) {
-        final Set<String> usernames = this.plugin.getOnlinePlayers().stream().map(ProxyPlayer::getName).collect(Collectors.toSet());
+        final Set<String> usernames = this.plugin.getOnlinePlayers().stream()
+                .filter(ProxyPlayer::notHidden)
+                .map(ProxyPlayer::getName)
+                .collect(Collectors.toSet());
+
+        usernames.remove(player.getName());
+
         if (args.length == 0) {
             return usernames;
         }
+
         final Set<String> completions = new HashSet<>();
         for (String username : usernames) {
             if (username.toLowerCase().startsWith(args[0].toLowerCase())) {

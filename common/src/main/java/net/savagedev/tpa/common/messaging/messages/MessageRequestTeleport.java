@@ -1,18 +1,11 @@
 package net.savagedev.tpa.common.messaging.messages;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.UUID;
 
-public class MessageRequestTeleport {
-    public static MessageRequestTeleport deserialize(String message) {
-        final JsonObject object = JsonParser.parseString(message).getAsJsonObject();
-
-        if (object.isJsonNull()) {
-            return null;
-        }
-
+public class MessageRequestTeleport implements Message {
+    public static MessageRequestTeleport deserialize(JsonObject object) {
         final UUID requester = UUID.fromString(object.get("requester").getAsString());
         final UUID receiver = UUID.fromString(object.get("receiver").getAsString());
 
@@ -48,12 +41,13 @@ public class MessageRequestTeleport {
         return this.type;
     }
 
-    public String serialize() {
+    @Override
+    public JsonObject serialize() {
         final JsonObject object = new JsonObject();
         object.addProperty("requester", this.requester.toString());
         object.addProperty("receiver", this.receiver.toString());
         object.addProperty("type", this.type.name());
-        return object.toString();
+        return object;
     }
 
     public enum Type {

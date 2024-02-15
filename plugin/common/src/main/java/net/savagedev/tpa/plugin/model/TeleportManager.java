@@ -1,6 +1,5 @@
 package net.savagedev.tpa.plugin.model;
 
-import net.savagedev.tpa.common.messaging.ChannelConstants;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
 import net.savagedev.tpa.plugin.BungeeTpPlatform;
@@ -9,9 +8,6 @@ import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 import net.savagedev.tpa.plugin.model.server.Server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,9 +17,9 @@ import java.util.concurrent.CompletableFuture;
 public final class TeleportManager {
     private final Map<UUID, TeleportRequest> requestMap = new HashMap<>();
 
-    private final BungeeTpPlatform<?> platform;
+    private final BungeeTpPlatform platform;
 
-    public TeleportManager(BungeeTpPlatform<?> platform) {
+    public TeleportManager(BungeeTpPlatform platform) {
         this.platform = platform;
     }
 
@@ -59,20 +55,16 @@ public final class TeleportManager {
     public boolean teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
         boolean success = true;
         final Server<?> targetServer = other.getCurrentServer();
-        try (final ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-             final DataOutputStream outputStream = new DataOutputStream(byteOutput)) {
-            final MessageRequestTeleport requestMessage = new MessageRequestTeleport(player.getUniqueId(), other.getUniqueId());
-            if (player.getCurrentServer().equals(targetServer)) {
-                requestMessage.setType(Type.INSTANT);
-            } else {
-                requestMessage.setType(Type.ON_JOIN);
-                success = player.connect(targetServer); // This might prove to be an issue, seeing as we need the player to be connected to the server to send plugin messages.
-            }
-            outputStream.writeUTF(requestMessage.serialize());
-            targetServer.sendData(ChannelConstants.CHANNEL_NAME, byteOutput.toByteArray()); // Like this one down here.
-        } catch (IOException e) {
-            e.fillInStackTrace();
+
+        final MessageRequestTeleport requestMessage = new MessageRequestTeleport(player.getUniqueId(), other.getUniqueId());
+        if (player.getCurrentServer().equals(targetServer)) {
+            requestMessage.setType(Type.INSTANT);
+        } else {
+            requestMessage.setType(Type.ON_JOIN);
+            success = player.connect(targetServer); // This might prove to be an issue, seeing as we need the player to be connected to the server to send plugin messages.
         }
+
+        this.platform.getPlatformMessenger().sendData(other, requestMessage);
         return success;
     }
 

@@ -1,6 +1,7 @@
 package net.savagedev.tpa.sponge.messenger;
 
 import net.savagedev.tpa.bridge.messenger.AbstractMessenger;
+import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.sponge.BungeeTpSpongePlugin;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
@@ -10,7 +11,7 @@ import org.spongepowered.api.network.channel.ChannelBuf;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
 import org.spongepowered.api.network.channel.raw.play.RawPlayDataHandler;
 
-public class SpongePluginMessenger extends AbstractMessenger implements RawPlayDataHandler<ServerSideConnection> {
+public class SpongePluginMessenger extends AbstractMessenger<ChannelBuf> implements RawPlayDataHandler<ServerSideConnection> {
     private static final ResourceKey CHANNEL_KEY = ResourceKey.resolve(CHANNEL);
 
     private RawDataChannel channel;
@@ -32,6 +33,10 @@ public class SpongePluginMessenger extends AbstractMessenger implements RawPlayD
             return;
         }
         this.channel.play().removeHandler(this);
+    }
+
+    @Override
+    public void sendData(ChannelBuf data, String channel, Message message) {
     }
 
     @Override

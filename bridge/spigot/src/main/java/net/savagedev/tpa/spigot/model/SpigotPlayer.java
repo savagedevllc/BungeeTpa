@@ -11,6 +11,9 @@ public class SpigotPlayer implements BungeeTpPlayer {
     private final Player player;
 
     public SpigotPlayer(Player player) {
+        if (player == null) {
+            throw new IllegalStateException("Player cannot be null!");
+        }
         this.player = player;
     }
 
@@ -33,5 +36,9 @@ public class SpigotPlayer implements BungeeTpPlayer {
     @Override
     public UUID getUniqueId() {
         return this.player.getUniqueId();
+    }
+
+    public Player getHandle() {
+        return this.player;
     }
 }

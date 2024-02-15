@@ -2,8 +2,10 @@ package net.savagedev.tpa.spigot;
 
 import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
-import net.savagedev.tpa.bridge.messenger.Messenger;
+import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishProvider;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.common.messaging.Messenger;
+import net.savagedev.tpa.spigot.hook.EssentialsVanishHook;
 import net.savagedev.tpa.spigot.listeners.ConnectionListener;
 import net.savagedev.tpa.spigot.messenger.SpigotPluginMessenger;
 import net.savagedev.tpa.spigot.model.SpigotPlayer;
@@ -11,6 +13,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePlatform {
@@ -18,10 +21,15 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
 
     private final BungeeTpBridgePlugin plugin = new BungeeTpBridgePlugin(this);
 
+    private final Messenger<BungeeTpPlayer> messenger = new SpigotPluginMessenger(this);
+
+    private AbstractVanishProvider vanishProvider;
+
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new ConnectionListener(this), this);
         this.plugin.enable();
+        this.hookVanishDependency();
 
         new Metrics(this, B_STATS_ID);
     }
@@ -29,6 +37,12 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     @Override
     public void onDisable() {
         this.plugin.disable();
+    }
+
+    private void hookVanishDependency() {
+        if (this.getServer().getPluginManager().isPluginEnabled("Essentials")) {
+            this.vanishProvider = new EssentialsVanishHook(this);
+        }
     }
 
     @Override
@@ -40,8 +54,13 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
-    public Messenger getPlatformMessenger() {
-        return new SpigotPluginMessenger(this);
+    public Optional<AbstractVanishProvider> getVanishProvider() {
+        return Optional.ofNullable(this.vanishProvider);
+    }
+
+    @Override
+    public Messenger<BungeeTpPlayer> getPlatformMessenger() {
+        return this.messenger;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package net.savagedev.tpa.plugin;
 
-import net.savagedev.tpa.common.messaging.ChannelConstants;
 import net.savagedev.tpa.plugin.commands.TpAcceptCommand;
 import net.savagedev.tpa.plugin.commands.TpCommand;
 import net.savagedev.tpa.plugin.commands.TpDenyCommand;
@@ -30,18 +29,18 @@ import java.util.function.Function;
 public class BungeeTpPlugin {
     private final PlayerManager playerManager;
 
-    private final BungeeTpPlatform<?> platform;
+    private final BungeeTpPlatform platform;
 
     private TeleportManager teleportManager;
 
-    public BungeeTpPlugin(BungeeTpPlatform<?> platform, Function<UUID, ProxyPlayer<?, ?>> playerLoaderFunction) {
+    public BungeeTpPlugin(BungeeTpPlatform platform, Function<UUID, ProxyPlayer<?, ?>> playerLoaderFunction) {
         playerManager = new PlayerManager(playerLoaderFunction);
         this.platform = platform;
     }
 
     public void enable() {
+        this.platform.getPlatformMessenger().init();
         this.teleportManager = new TeleportManager(this.platform);
-        this.platform.registerChannel(ChannelConstants.CHANNEL_NAME);
         this.initConfigs();
         this.applyConfigUpdates();
         this.initCommands();
@@ -49,8 +48,8 @@ public class BungeeTpPlugin {
     }
 
     public void disable() {
-        this.platform.unregisterChannel(ChannelConstants.CHANNEL_NAME);
         this.teleportManager.shutdown();
+        this.platform.getPlatformMessenger().shutdown();
     }
 
     private void initConfigs() {

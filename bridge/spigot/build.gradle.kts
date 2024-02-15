@@ -7,13 +7,19 @@ version = project.parent?.version!!
 
 repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
+    maven("https://repo.essentialsx.net/snapshots/")
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
 
+    compileOnly("net.essentialsx:EssentialsX:2.21.0-SNAPSHOT") {
+        exclude("io.papermc")
+    }
+
     implementation("org.bstats:bstats-bukkit:3.0.2")
     implementation(project(":bridge:common"))
+    implementation(project(":common"))
 }
 
 tasks {

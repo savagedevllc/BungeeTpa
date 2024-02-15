@@ -15,7 +15,7 @@ public class PlayerManager extends AbstractManager<UUID, ProxyPlayer<?, ?>> {
     public Optional<ProxyPlayer<?, ?>> getByName(String username) {
         return this.getAll().values()
                 .stream()
-                .filter(player -> player.getName().equals(username))
+                .filter(player -> player.getName().equalsIgnoreCase(username))
                 .findFirst();
     }
 

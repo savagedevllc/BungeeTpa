@@ -14,6 +14,7 @@ dependencies {
 
     implementation("org.bstats:bstats-bungeecord:3.0.2")
     implementation(project(":plugin:common"))
+    implementation(project(":common"))
 }
 
 tasks {

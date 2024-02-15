@@ -8,7 +8,6 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.kyori.adventure.text.Component;
@@ -31,7 +30,7 @@ import java.util.logging.Logger;
 
 @Plugin(id = "velocitytp", name = "VelocityTP", version = "${version}",
         url = "https://www.savagedev.net", description = "Teleport across a Velocity network.", authors = {"SavageAvocado"})
-public class BungeeTpVelocityPlugin implements BungeeTpPlatform<Player> {
+public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     private static final int B_STATS_ID = 20994;
 
     public static final Function<String, Component> CHAT_MESSAGE_FORMATTING_FUNCTION = new VelocityChatFormattingFunction();

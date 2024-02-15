@@ -1,7 +1,6 @@
 package net.savagedev.tpa.bungee;
 
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.savagedev.tpa.bungee.command.BungeeCommand;
@@ -9,10 +8,13 @@ import net.savagedev.tpa.bungee.config.BungeeConfigurationLoader;
 import net.savagedev.tpa.bungee.functions.BungeeChatFormattingFunction;
 import net.savagedev.tpa.bungee.functions.BungeePlayerLoaderFunction;
 import net.savagedev.tpa.bungee.listeners.BungeeConnectionListener;
+import net.savagedev.tpa.bungee.messenger.BungeePluginMessenger;
+import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.plugin.BungeeTpPlatform;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.command.BungeeTpCommand;
 import net.savagedev.tpa.plugin.config.loader.ConfigurationLoader;
+import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.FileNotFoundException;
@@ -20,12 +22,13 @@ import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform<ProxiedPlayer> {
+public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
     private static final int B_STATS_ID = 20993;
 
     public static final Function<String, BaseComponent[]> CHAT_MESSAGE_FORMATTING_FUNCTION = new BungeeChatFormattingFunction();
 
     private final BungeeTpPlugin plugin = new BungeeTpPlugin(this, new BungeePlayerLoaderFunction());
+    private final Messenger<ProxyPlayer<?, ?>> messenger = new BungeePluginMessenger(this);
 
     private PluginManager pluginManager;
 
@@ -54,16 +57,6 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform<Pro
     }
 
     @Override
-    public void registerChannel(String channelName) {
-        this.getProxy().registerChannel(channelName);
-    }
-
-    @Override
-    public void unregisterChannel(String channelName) {
-        this.getProxy().unregisterChannel(channelName);
-    }
-
-    @Override
     public void scheduleTaskDelayed(Runnable task, long delay) {
         this.getProxy().getScheduler().schedule(this, task, delay, TimeUnit.MILLISECONDS);
     }
@@ -79,7 +72,16 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform<Pro
     }
 
     @Override
+    public Messenger<ProxyPlayer<?, ?>> getPlatformMessenger() {
+        return this.messenger;
+    }
+
+    @Override
     public Path getDataPath() {
         return this.getDataFolder().toPath();
+    }
+
+    public BungeeTpPlugin getPlugin() {
+        return this.plugin;
     }
 }

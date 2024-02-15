@@ -2,6 +2,7 @@ package net.savagedev.tpa.bridge.listener;
 
 import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.common.messaging.messages.MessagePlayerInfo;
 
 import java.util.UUID;
 
@@ -13,6 +14,10 @@ public class AbstractConnectionListener {
     }
 
     protected void handleJoinEvent(BungeeTpPlayer player) {
+        this.platform.delay(() -> this.platform.getVanishProvider().ifPresent(provider ->
+                this.platform.getPlatformMessenger().sendData(player, new MessagePlayerInfo(player.getUniqueId(), provider.isVanished(player)))
+        ), 250L);
+
         final UUID targetId = this.platform.getTpCache().remove(player.getUniqueId());
 
         if (targetId == null) {

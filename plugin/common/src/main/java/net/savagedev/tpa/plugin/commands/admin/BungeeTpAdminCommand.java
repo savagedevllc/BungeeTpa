@@ -14,7 +14,6 @@ import java.util.Set;
 
 public class BungeeTpAdminCommand implements BungeeTpCommand {
     private final Map<String, BungeeTpCommand> children = new HashMap<>();
-
     {
         children.put("reload", new ReloadCommand());
     }

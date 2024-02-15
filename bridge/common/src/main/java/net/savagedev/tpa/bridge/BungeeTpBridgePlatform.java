@@ -1,15 +1,19 @@
 package net.savagedev.tpa.bridge;
 
-import net.savagedev.tpa.bridge.messenger.Messenger;
+import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishProvider;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.common.messaging.Messenger;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BungeeTpBridgePlatform {
     void delay(Runnable runnable, long delay);
 
-    Messenger getPlatformMessenger();
+    Optional<AbstractVanishProvider> getVanishProvider();
+
+    Messenger<BungeeTpPlayer> getPlatformMessenger();
 
     BungeeTpPlayer getBungeeTpPlayer(UUID uuid);
 

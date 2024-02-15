@@ -1,37 +1,35 @@
-package net.savagedev.tpa.bridge.messenger;
+package net.savagedev.tpa.plugin.messenger;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
-import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
 import net.savagedev.tpa.common.messaging.ChannelConstants;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.common.messaging.messages.Message;
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
+import net.savagedev.tpa.common.messaging.messages.MessagePlayerInfo;
+import net.savagedev.tpa.plugin.BungeeTpPlugin;
+import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
-public abstract class AbstractMessenger<T> implements Messenger<T> {
+public abstract class AbstractMessenger<T extends ProxyPlayer<?, ?>> implements Messenger<T> {
     private static final Map<String, Function<JsonObject, Message>> DECODER_FUNCTIONS = new HashMap<>();
 
     static {
-        DECODER_FUNCTIONS.put(MessageRequestTeleport.class.getSimpleName(), MessageRequestTeleport::deserialize);
+        DECODER_FUNCTIONS.put(MessagePlayerInfo.class.getSimpleName(), MessagePlayerInfo::deserialize);
     }
 
     protected static final String CHANNEL = ChannelConstants.CHANNEL_NAME;
 
-    private final BungeeTpBridgePlatform platform;
+    private final BungeeTpPlugin plugin;
 
-    public AbstractMessenger(BungeeTpBridgePlatform platform) {
-        this.platform = platform;
+    public AbstractMessenger(BungeeTpPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
@@ -67,28 +65,21 @@ public abstract class AbstractMessenger<T> implements Messenger<T> {
                 return;
             }
 
-            if (message instanceof MessageRequestTeleport) {
-                this.handleTeleportRequest((MessageRequestTeleport) message);
+            if (message instanceof MessagePlayerInfo) {
+                this.handlePlayerInfo((MessagePlayerInfo) message);
             }
         } catch (IOException e) {
             e.fillInStackTrace();
         }
     }
 
-    private void handleTeleportRequest(MessageRequestTeleport request) {
-        if (request == null) {
+    private void handlePlayerInfo(MessagePlayerInfo playerInfo) {
+        if (playerInfo == null) {
             return;
         }
 
-        final UUID requesterId = request.getRequester();
-        final BungeeTpPlayer receiver = this.platform.getBungeeTpPlayer(request.getReceiver());
-
-        if (request.getType() == Type.INSTANT) {
-            final BungeeTpPlayer requester = this.platform.getBungeeTpPlayer(requesterId);
-            requester.teleportTo(receiver);
-        } else {
-            this.platform.getTpCache().put(requesterId, receiver.getUniqueId());
-        }
+        this.plugin.getPlayer(playerInfo.getUniqueId())
+                .ifPresent(player -> player.setHidden(playerInfo.isHidden()));
     }
 
     @Override
