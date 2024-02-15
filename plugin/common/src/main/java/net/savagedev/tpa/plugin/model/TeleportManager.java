@@ -61,7 +61,7 @@ public final class TeleportManager {
             requestMessage.setType(Type.INSTANT);
         } else {
             requestMessage.setType(Type.ON_JOIN);
-            success = player.connect(targetServer); // This might prove to be an issue, seeing as we need the player to be connected to the server to send plugin messages.
+            success = player.connect(targetServer);
         }
 
         this.platform.getPlatformMessenger().sendData(other, requestMessage);
