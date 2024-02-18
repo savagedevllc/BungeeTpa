@@ -15,8 +15,8 @@ public class AbstractConnectionListener {
 
     protected void handleJoinEvent(BungeeTpPlayer player) {
         this.platform.delay(() -> this.platform.getVanishProvider().ifPresent(provider ->
-                this.platform.getPlatformMessenger().sendData(player, new MessagePlayerInfo(player.getUniqueId(), provider.isVanished(player)))
-        ), 250L);
+                        this.platform.getMessenger().sendData(player, new MessagePlayerInfo(player.getUniqueId(), provider.isVanished(player)))),
+                250L);
 
         final UUID targetId = this.platform.getTpCache().remove(player.getUniqueId());
 

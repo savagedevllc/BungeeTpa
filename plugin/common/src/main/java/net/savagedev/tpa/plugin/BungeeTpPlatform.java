@@ -3,7 +3,7 @@ package net.savagedev.tpa.plugin;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.plugin.command.BungeeTpCommand;
 import net.savagedev.tpa.plugin.config.loader.ConfigurationLoader;
-import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
+import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
@@ -18,7 +18,7 @@ public interface BungeeTpPlatform {
 
     ConfigurationLoader newConfigurationLoader(Path path) throws FileNotFoundException;
 
-    Messenger<ProxyPlayer<?, ?>> getPlatformMessenger();
+    Messenger<Server<?>> getMessenger();
 
     Logger getLogger();
 

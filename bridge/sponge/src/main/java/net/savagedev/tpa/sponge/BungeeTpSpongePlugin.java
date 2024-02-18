@@ -64,7 +64,7 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
-    public Messenger getPlatformMessenger() {
+    public Messenger getMessenger() {
         return new SpongePluginMessenger(this);
     }
 

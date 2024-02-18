@@ -17,6 +17,8 @@ public interface ProxyPlayer<T, M> {
 
     boolean isConnected();
 
+    boolean isHidden();
+
     boolean notHidden();
 
     Server<?> getCurrentServer();

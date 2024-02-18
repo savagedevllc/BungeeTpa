@@ -4,22 +4,22 @@ import com.google.gson.JsonObject;
 
 import java.util.UUID;
 
-public class MessagePlayerInfo implements Message {
+public class MessagePlayerInfo extends Message {
     public static MessagePlayerInfo deserialize(JsonObject object) {
         return new MessagePlayerInfo(UUID.fromString(object.get("uuid").getAsString()), object.get("hidden").getAsBoolean());
     }
 
-    private final UUID uuid;
+    private final UUID uniqueId;
 
     private final boolean hidden;
 
-    public MessagePlayerInfo(UUID uuid, boolean hidden) {
-        this.uuid = uuid;
+    public MessagePlayerInfo(UUID uniqueId, boolean hidden) {
+        this.uniqueId = uniqueId;
         this.hidden = hidden;
     }
 
     public UUID getUniqueId() {
-        return this.uuid;
+        return this.uniqueId;
     }
 
     public boolean isHidden() {
@@ -27,9 +27,9 @@ public class MessagePlayerInfo implements Message {
     }
 
     @Override
-    public JsonObject serialize() {
+    protected JsonObject asJsonObject() {
         final JsonObject object = new JsonObject();
-        object.addProperty("uuid", this.uuid.toString());
+        object.addProperty("uuid", this.uniqueId.toString());
         object.addProperty("hidden", this.hidden);
         return object;
     }

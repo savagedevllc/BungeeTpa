@@ -15,11 +15,11 @@ public class BungeeTpBridgePlugin {
 
     public void enable() {
         this.tpCache = new HashMap<>(this.platform.getMaxPlayers());
-        this.platform.getPlatformMessenger().init();
+        this.platform.getMessenger().init();
     }
 
     public void disable() {
-        this.platform.getPlatformMessenger().shutdown();
+        this.platform.getMessenger().shutdown();
     }
 
     public Map<UUID, UUID> getTpCache() {

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 import java.util.UUID;
 
-public class MessageRequestTeleport implements Message {
+public class MessageRequestTeleport extends Message {
     public static MessageRequestTeleport deserialize(JsonObject object) {
         final UUID requester = UUID.fromString(object.get("requester").getAsString());
         final UUID receiver = UUID.fromString(object.get("receiver").getAsString());
@@ -42,7 +42,7 @@ public class MessageRequestTeleport implements Message {
     }
 
     @Override
-    public JsonObject serialize() {
+    protected JsonObject asJsonObject() {
         final JsonObject object = new JsonObject();
         object.addProperty("requester", this.requester.toString());
         object.addProperty("receiver", this.receiver.toString());

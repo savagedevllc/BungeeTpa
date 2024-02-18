@@ -13,6 +13,8 @@ import net.savagedev.tpa.plugin.config.updates.ConfigUpdater_v1;
 import net.savagedev.tpa.plugin.model.TeleportManager;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.player.manager.PlayerManager;
+import net.savagedev.tpa.plugin.model.server.Server;
+import net.savagedev.tpa.plugin.model.server.manager.ServerManager;
 import net.savagedev.tpa.plugin.tasks.RequestExpireHousekeeperTask;
 import net.savagedev.tpa.plugin.utils.FileUtils;
 
@@ -25,21 +27,24 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 public class BungeeTpPlugin {
+    private final ServerManager serverManager;
     private final PlayerManager playerManager;
 
     private final BungeeTpPlatform platform;
 
     private TeleportManager teleportManager;
 
-    public BungeeTpPlugin(BungeeTpPlatform platform, Function<UUID, ProxyPlayer<?, ?>> playerLoaderFunction) {
-        playerManager = new PlayerManager(playerLoaderFunction);
+    public BungeeTpPlugin(BungeeTpPlatform platform, Function<UUID, ProxyPlayer<?, ?>> playerLoaderFunction, Function<String, Server<?>> serverLoaderFunction) {
+        this.playerManager = new PlayerManager(playerLoaderFunction);
+        this.serverManager = new ServerManager(serverLoaderFunction);
         this.platform = platform;
     }
 
     public void enable() {
-        this.platform.getPlatformMessenger().init();
+        this.platform.getMessenger().init();
         this.teleportManager = new TeleportManager(this.platform);
         this.initConfigs();
         this.applyConfigUpdates();
@@ -49,7 +54,7 @@ public class BungeeTpPlugin {
 
     public void disable() {
         this.teleportManager.shutdown();
-        this.platform.getPlatformMessenger().shutdown();
+        this.platform.getMessenger().shutdown();
     }
 
     private void initConfigs() {
@@ -107,6 +112,10 @@ public class BungeeTpPlugin {
         this.platform.registerCommand(new TpHereCommand(this), "tphere", "bungeetp.tphere", "s");
     }
 
+    public ServerManager getServerManager() {
+        return this.serverManager;
+    }
+
     public PlayerManager getPlayerManager() {
         return this.playerManager;
     }
@@ -125,5 +134,13 @@ public class BungeeTpPlugin {
 
     public TeleportManager getTeleportManager() {
         return this.teleportManager;
+    }
+
+    public Logger getLogger() {
+        return this.platform.getLogger();
+    }
+
+    public BungeeTpPlatform getPlatform() {
+        return this.platform;
     }
 }

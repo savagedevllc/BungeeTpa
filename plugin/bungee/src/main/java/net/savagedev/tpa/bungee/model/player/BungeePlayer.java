@@ -4,7 +4,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.savagedev.tpa.bungee.BungeeTpBungeePlugin;
-import net.savagedev.tpa.bungee.model.server.BungeeServer;
+import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.model.player.AbstractProxyPlayer;
 import net.savagedev.tpa.plugin.model.server.Server;
 
@@ -15,8 +15,8 @@ public class BungeePlayer extends AbstractProxyPlayer<ProxiedPlayer, BaseCompone
 
     private boolean hidden = false;
 
-    public BungeePlayer(ProxiedPlayer player) {
-        super(player, BungeeTpBungeePlugin.CHAT_MESSAGE_FORMATTING_FUNCTION);
+    public BungeePlayer(ProxiedPlayer player, BungeeTpPlugin plugin) {
+        super(plugin, player, BungeeTpBungeePlugin.CHAT_MESSAGE_FORMATTING_FUNCTION);
         this.player = player;
     }
 
@@ -50,13 +50,13 @@ public class BungeePlayer extends AbstractProxyPlayer<ProxiedPlayer, BaseCompone
     }
 
     @Override
-    public boolean notHidden() {
-        return !this.hidden;
+    public boolean isHidden() {
+        return this.hidden;
     }
 
     @Override
-    public BungeeServer getCurrentServer() {
-        return BungeeServer.fromServerInfo(this.player.getServer().getInfo());
+    public boolean notHidden() {
+        return !this.hidden;
     }
 
     @Override
@@ -67,5 +67,10 @@ public class BungeePlayer extends AbstractProxyPlayer<ProxiedPlayer, BaseCompone
     @Override
     public String getName() {
         return this.player.getName();
+    }
+
+    @Override
+    protected String getCurrentServerId() {
+        return this.player.getServer().getInfo().getName();
     }
 }

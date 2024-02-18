@@ -7,6 +7,7 @@ import net.savagedev.tpa.bungee.command.BungeeCommand;
 import net.savagedev.tpa.bungee.config.BungeeConfigurationLoader;
 import net.savagedev.tpa.bungee.functions.BungeeChatFormattingFunction;
 import net.savagedev.tpa.bungee.functions.BungeePlayerLoaderFunction;
+import net.savagedev.tpa.bungee.functions.BungeeServerLoaderFunction;
 import net.savagedev.tpa.bungee.listeners.BungeeConnectionListener;
 import net.savagedev.tpa.bungee.messenger.BungeePluginMessenger;
 import net.savagedev.tpa.common.messaging.Messenger;
@@ -14,7 +15,7 @@ import net.savagedev.tpa.plugin.BungeeTpPlatform;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.command.BungeeTpCommand;
 import net.savagedev.tpa.plugin.config.loader.ConfigurationLoader;
-import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
+import net.savagedev.tpa.plugin.model.server.Server;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.FileNotFoundException;
@@ -27,8 +28,10 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
 
     public static final Function<String, BaseComponent[]> CHAT_MESSAGE_FORMATTING_FUNCTION = new BungeeChatFormattingFunction();
 
-    private final BungeeTpPlugin plugin = new BungeeTpPlugin(this, new BungeePlayerLoaderFunction());
-    private final Messenger<ProxyPlayer<?, ?>> messenger = new BungeePluginMessenger(this);
+    private final BungeeTpPlugin plugin = new BungeeTpPlugin(this,
+            new BungeePlayerLoaderFunction(this),
+            new BungeeServerLoaderFunction());
+    private final Messenger<Server<?>> messenger = new BungeePluginMessenger(this);
 
     private PluginManager pluginManager;
 
@@ -72,7 +75,7 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
     }
 
     @Override
-    public Messenger<ProxyPlayer<?, ?>> getPlatformMessenger() {
+    public Messenger<Server<?>> getMessenger() {
         return this.messenger;
     }
 

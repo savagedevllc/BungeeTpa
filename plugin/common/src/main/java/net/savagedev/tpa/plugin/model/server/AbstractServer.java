@@ -7,9 +7,22 @@ public abstract class AbstractServer<T> implements Server<T> {
     private final String id;
     private final T handle;
 
+    private boolean sentBasicInfo;
+    private boolean economySupport;
+
     public AbstractServer(String id, T handle) {
         this.id = id;
         this.handle = handle;
+    }
+
+    @Override
+    public void setSentBasicInfo(boolean sentBasicInfo) {
+        this.sentBasicInfo = sentBasicInfo;
+    }
+
+    @Override
+    public void setEconomySupport(boolean economySupport) {
+        this.economySupport = economySupport;
     }
 
     @Override
@@ -23,6 +36,16 @@ public abstract class AbstractServer<T> implements Server<T> {
     }
 
     protected abstract boolean canAccess(ProxyPlayer<?, ?> player);
+
+    @Override
+    public boolean hasSentBasicInfo() {
+        return this.sentBasicInfo;
+    }
+
+    @Override
+    public boolean hasEconomySupport() {
+        return this.economySupport;
+    }
 
     @Override
     public boolean isAccessibleTo(ProxyPlayer<?, ?> player) {

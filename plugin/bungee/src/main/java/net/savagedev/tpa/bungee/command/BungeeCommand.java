@@ -4,7 +4,6 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
-import net.savagedev.tpa.bungee.model.player.BungeePlayer;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.command.BungeeTpCommand;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
@@ -26,7 +25,7 @@ public class BungeeCommand extends Command implements TabExecutor {
         }
 
         final ProxyPlayer<?, ?> player = this.plugin.getPlayer(((ProxiedPlayer) sender).getUniqueId())
-                .orElse(new BungeePlayer((ProxiedPlayer) sender));
+                .orElseThrow();
 
         this.command.execute(player, args);
     }
@@ -38,7 +37,7 @@ public class BungeeCommand extends Command implements TabExecutor {
         }
 
         final ProxyPlayer<?, ?> player = this.plugin.getPlayer(((ProxiedPlayer) sender).getUniqueId())
-                .orElse(new BungeePlayer((ProxiedPlayer) sender));
+                .orElseThrow();
 
         return this.command.complete(player, args);
     }

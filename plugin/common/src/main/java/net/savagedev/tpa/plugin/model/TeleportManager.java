@@ -64,7 +64,7 @@ public final class TeleportManager {
             success = player.connect(targetServer);
         }
 
-        this.platform.getPlatformMessenger().sendData(other, requestMessage);
+        this.platform.getMessenger().sendData(other.getCurrentServer(), requestMessage);
         return success;
     }
 

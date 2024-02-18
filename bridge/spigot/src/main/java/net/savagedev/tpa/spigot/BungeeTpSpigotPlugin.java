@@ -2,10 +2,14 @@ package net.savagedev.tpa.spigot;
 
 import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
-import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishProvider;
+import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
+import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
 import net.savagedev.tpa.common.messaging.Messenger;
-import net.savagedev.tpa.spigot.hook.EssentialsVanishHook;
+import net.savagedev.tpa.spigot.hook.economy.VaultEconomyHook;
+import net.savagedev.tpa.spigot.hook.vanish.EssentialsVanishHook;
+import net.savagedev.tpa.spigot.hook.vanish.GenericVanishHook;
+import net.savagedev.tpa.spigot.hook.vanish.SuperVanishPluginHook;
 import net.savagedev.tpa.spigot.listeners.ConnectionListener;
 import net.savagedev.tpa.spigot.messenger.SpigotPluginMessenger;
 import net.savagedev.tpa.spigot.model.SpigotPlayer;
@@ -23,13 +27,16 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
 
     private final Messenger<BungeeTpPlayer> messenger = new SpigotPluginMessenger(this);
 
-    private AbstractVanishProvider vanishProvider;
+    private AbstractVanishHook vanishProvider;
+    private AbstractEconomyHook economyHook;
 
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new ConnectionListener(this), this);
         this.plugin.enable();
-        this.hookVanishDependency();
+
+        this.hookEconomy();
+        this.hookVanish();
 
         new Metrics(this, B_STATS_ID);
     }
@@ -39,10 +46,29 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
         this.plugin.disable();
     }
 
-    private void hookVanishDependency() {
+    private void hookVanish() {
         if (this.getServer().getPluginManager().isPluginEnabled("Essentials")) {
             this.vanishProvider = new EssentialsVanishHook(this);
+            return;
         }
+
+        if (this.getServer().getPluginManager().isPluginEnabled("SuperVanish") ||
+                this.getServer().getPluginManager().isPluginEnabled("PremiumVanish")) {
+            this.vanishProvider = new SuperVanishPluginHook(this);
+            return;
+        }
+
+        this.vanishProvider = new GenericVanishHook(this);
+    }
+
+    private void hookEconomy() {
+        if (this.getServer().getPluginManager().isPluginEnabled("Vault")) {
+            this.economyHook = new VaultEconomyHook(this);
+        }
+    }
+
+    @Override
+    public void schedule(Runnable runnable, long delay, long period) {
     }
 
     @Override
@@ -54,18 +80,39 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
-    public Optional<AbstractVanishProvider> getVanishProvider() {
+    public Optional<AbstractVanishHook> getVanishProvider() {
         return Optional.ofNullable(this.vanishProvider);
     }
 
     @Override
-    public Messenger<BungeeTpPlayer> getPlatformMessenger() {
+    public Optional<AbstractEconomyHook> getEconomyProvider() {
+        if (this.economyHook != null && this.economyHook.isEnabled()) {
+            return Optional.of(this.economyHook);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public String getSoftwareName() {
+        return this.getServer().getName();
+    }
+
+    @Override
+    public Messenger<BungeeTpPlayer> getMessenger() {
         return this.messenger;
     }
 
     @Override
     public BungeeTpPlayer getBungeeTpPlayer(UUID uuid) {
-        return new SpigotPlayer(this.getServer().getPlayer(uuid));
+        return new SpigotPlayer(this.getServer().getPlayer(uuid), this);
+    }
+
+    @Override
+    public BungeeTpPlayer getABungeeTpPlayer() {
+        return this.getBungeeTpPlayer(this.getServer().getOnlinePlayers()
+                .iterator()
+                .next()
+                .getUniqueId());
     }
 
     @Override
