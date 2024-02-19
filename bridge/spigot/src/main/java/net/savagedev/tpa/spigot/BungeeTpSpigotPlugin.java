@@ -14,6 +14,7 @@ import net.savagedev.tpa.spigot.listeners.ConnectionListener;
 import net.savagedev.tpa.spigot.messenger.SpigotPluginMessenger;
 import net.savagedev.tpa.spigot.model.SpigotPlayer;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Map;
@@ -68,7 +69,8 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
-    public void schedule(Runnable runnable, long delay, long period) {
+    public void scheduleAsync(Runnable runnable, long delay, long period) {
+        this.getServer().getScheduler().runTaskTimerAsynchronously(this, runnable, delay, period / 50L);
     }
 
     @Override
@@ -102,9 +104,13 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
         return this.messenger;
     }
 
+    public BungeeTpPlayer getBungeeTpPlayer(Player player) {
+        return new SpigotPlayer(player, this);
+    }
+
     @Override
     public BungeeTpPlayer getBungeeTpPlayer(UUID uuid) {
-        return new SpigotPlayer(this.getServer().getPlayer(uuid), this);
+        return this.getBungeeTpPlayer(this.getServer().getPlayer(uuid));
     }
 
     @Override

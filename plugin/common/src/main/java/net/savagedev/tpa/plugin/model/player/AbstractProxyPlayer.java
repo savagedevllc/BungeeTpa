@@ -25,7 +25,8 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
 
     @Override
     public Server<?> getCurrentServer() {
-        return this.plugin.getServerManager().getOrLoad(this.getCurrentServerId()).orElseThrow();
+        return this.plugin.getServerManager().getOrLoad(this.getCurrentServerId())
+                .orElseThrow(() -> new IllegalStateException("Player not loaded."));
     }
 
     protected abstract String getCurrentServerId();

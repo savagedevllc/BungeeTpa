@@ -25,7 +25,7 @@ public class BungeeCommand extends Command implements TabExecutor {
         }
 
         final ProxyPlayer<?, ?> player = this.plugin.getPlayer(((ProxiedPlayer) sender).getUniqueId())
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalStateException("Player not loaded."));
 
         this.command.execute(player, args);
     }

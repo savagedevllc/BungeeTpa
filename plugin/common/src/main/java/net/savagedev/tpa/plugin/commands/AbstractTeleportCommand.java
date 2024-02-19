@@ -37,7 +37,7 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
 
         final Optional<ProxyPlayer<?, ?>> target = this.plugin.getPlayer(username);
 
-        if (target.isEmpty() || target.get().isHidden()) {
+        if (!target.isPresent() || target.get().isHidden()) {
             Lang.UNKNOWN_PLAYER.send(player, new Lang.Placeholder("%player%", username));
             return;
         }

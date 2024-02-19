@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BungeeTpBridgePlatform {
-    void schedule(Runnable runnable, long delay, long period);
+    void scheduleAsync(Runnable runnable, long delay, long period);
 
     void delay(Runnable runnable, long delay);
 

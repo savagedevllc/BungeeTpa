@@ -1,6 +1,8 @@
 name: BungeeTp
 description: Teleport across a BungeeCord network.
 
+softdepend: [ Vault, Essentials, SuperVanish, PremiumVanish ]
+
 author: SavageAvocado.
 website: savagedev.net
 

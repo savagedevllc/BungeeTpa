@@ -22,12 +22,13 @@ public class BungeeConnectionListener extends AbstractConnectionListener impleme
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void on(ServerConnectedEvent event) {
-        super.handleServerConnectEvent(this.plugin.getPlayer(event.getPlayer().getUniqueId()).orElseThrow(), event.getServer().getInfo().getName());
+        super.handleServerConnectEvent(this.plugin.getPlayer(event.getPlayer().getUniqueId())
+                .orElseThrow(() -> new IllegalStateException("Player not loaded.")), event.getServer().getInfo().getName());
     }
 
     @EventHandler
     public void on(PlayerDisconnectEvent event) {
         super.handleDisconnectEvent(super.plugin.getPlayer(event.getPlayer().getUniqueId())
-                .orElseThrow()); // This shouldn't ever happen. And if it does, I want to know about it.
+                .orElseThrow(() -> new IllegalStateException("Player not loaded."))); // This shouldn't ever happen. And if it does, I want to know about it.
     }
 }

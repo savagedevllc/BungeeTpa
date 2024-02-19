@@ -17,11 +17,13 @@ public abstract class AbstractConnectionListener {
     }
 
     protected void handleConnectEvent(UUID uuid) {
-        this.plugin.getPlayerManager().getOrLoad(uuid).orElseThrow();
+        this.plugin.getPlayerManager().getOrLoad(uuid)
+                .orElseThrow(() -> new IllegalStateException("Player not loaded."));
     }
 
     protected void handleServerConnectEvent(ProxyPlayer<?, ?> player, String serverId) {
-        final Server<?> server = this.plugin.getServerManager().getOrLoad(serverId).orElseThrow();
+        final Server<?> server = this.plugin.getServerManager().getOrLoad(serverId)
+                .orElseThrow(() -> new IllegalStateException("Server not loaded."));
 
         if (server.hasSentBasicInfo()) {
             return;
