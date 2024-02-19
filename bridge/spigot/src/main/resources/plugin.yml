@@ -6,5 +6,6 @@ softdepend: [ Vault, Essentials, SuperVanish, PremiumVanish ]
 author: SavageAvocado.
 website: savagedev.net
 
+api-version: 1.13
 main: net.savagedev.tpa.spigot.BungeeTpSpigotPlugin
 version: ${version}
