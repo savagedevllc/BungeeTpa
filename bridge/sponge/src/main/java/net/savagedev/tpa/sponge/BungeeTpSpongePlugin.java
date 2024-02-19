@@ -3,8 +3,11 @@ package net.savagedev.tpa.sponge;
 import com.google.inject.Inject;
 import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
+import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
+import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
 import net.savagedev.tpa.common.messaging.Messenger;
+import net.savagedev.tpa.sponge.hook.SpongeEconomyHook;
 import net.savagedev.tpa.sponge.listener.ConnectionListener;
 import net.savagedev.tpa.sponge.messenger.SpongePluginMessenger;
 import net.savagedev.tpa.sponge.model.SpongePlayer;
@@ -54,6 +57,11 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
+    public void scheduleAsync(Runnable runnable, long delay, long period) {
+
+    }
+
+    @Override
     public void delay(Runnable runnable, long delay) {
         final Task task = Task.builder()
                 .delay(delay, TimeUnit.MILLISECONDS)
@@ -64,13 +72,19 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
-    public Messenger getMessenger() {
+    public Messenger<BungeeTpPlayer> getMessenger() {
         return new SpongePluginMessenger(this);
     }
 
     @Override
     public BungeeTpPlayer getBungeeTpPlayer(UUID uuid) {
-        return new SpongePlayer(Sponge.server().player(uuid).orElseThrow());
+        return new SpongePlayer(Sponge.server().player(uuid)
+                .orElseThrow(() -> new IllegalStateException("cannot get bungeetpplayer for offline sponge player")));
+    }
+
+    @Override
+    public BungeeTpPlayer getABungeeTpPlayer() {
+        return this.getBungeeTpPlayer(Sponge.server().onlinePlayers().iterator().next().uniqueId());
     }
 
     @Override
@@ -82,6 +96,21 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     public String getOfflineUsername(UUID uuid) {
         Optional<User> userOptional = Sponge.server().userManager().load(uuid).join();
         return userOptional.map(User::name).orElse(null);
+    }
+
+    @Override
+    public Optional<AbstractVanishHook> getVanishProvider() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<AbstractEconomyHook> getEconomyProvider() {
+        return Optional.of(new SpongeEconomyHook(this));
+    }
+
+    @Override
+    public String getSoftwareName() {
+        return "Sponge";
     }
 
     @Override

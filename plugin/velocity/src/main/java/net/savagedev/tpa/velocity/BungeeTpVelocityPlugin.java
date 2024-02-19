@@ -9,17 +9,20 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.kyori.adventure.text.Component;
+import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.plugin.BungeeTpPlatform;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.command.BungeeTpCommand;
 import net.savagedev.tpa.plugin.config.loader.ConfigurationLoader;
+import net.savagedev.tpa.plugin.model.server.Server;
 import net.savagedev.tpa.velocity.command.VelocityCommand;
 import net.savagedev.tpa.velocity.config.VelocityConfigurationLoader;
 import net.savagedev.tpa.velocity.functions.VelocityChatFormattingFunction;
 import net.savagedev.tpa.velocity.functions.VelocityPlayerLoaderFunction;
+import net.savagedev.tpa.velocity.functions.VelocityServerLoaderFunction;
 import net.savagedev.tpa.velocity.listeners.VelocityConnectionListener;
+import net.savagedev.tpa.velocity.messenger.VelocityPluginMessenger;
 import org.bstats.velocity.Metrics;
 
 import java.io.FileNotFoundException;
@@ -37,10 +40,10 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
 
     private final BungeeTpPlugin plugin;
     private final Path dataPath;
+    private final VelocityPluginMessenger messenger;
 
     private final ProxyServer server;
     private final Logger logger;
-
     private final Metrics.Factory metricsFactory;
 
     @Inject
@@ -48,8 +51,9 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
         this.server = server;
         this.logger = logger;
         this.dataPath = dataPath;
-        this.plugin = new BungeeTpPlugin(this, new VelocityPlayerLoaderFunction(this.server));
         this.metricsFactory = metricsFactory;
+        this.messenger = new VelocityPluginMessenger(this);
+        this.plugin = new BungeeTpPlugin(this, new VelocityPlayerLoaderFunction(this), new VelocityServerLoaderFunction(this.server));
     }
 
     @Subscribe
@@ -76,16 +80,6 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     }
 
     @Override
-    public void registerChannel(String channelName) {
-        this.server.getChannelRegistrar().register(MinecraftChannelIdentifier.from(channelName));
-    }
-
-    @Override
-    public void unregisterChannel(String channelName) {
-        this.server.getChannelRegistrar().unregister(MinecraftChannelIdentifier.from(channelName));
-    }
-
-    @Override
     public void scheduleTaskDelayed(Runnable task, long delay) {
         this.server.getScheduler().buildTask(this, task)
                 .delay(delay, TimeUnit.MILLISECONDS)
@@ -105,6 +99,11 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     }
 
     @Override
+    public Messenger<Server<?>> getMessenger() {
+        return this.messenger;
+    }
+
+    @Override
     public Logger getLogger() {
         return this.logger;
     }
@@ -112,5 +111,13 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     @Override
     public Path getDataPath() {
         return this.dataPath;
+    }
+
+    public ProxyServer getServer() {
+        return this.server;
+    }
+
+    public BungeeTpPlugin getPlugin() {
+        return this.plugin;
     }
 }

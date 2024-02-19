@@ -3,6 +3,7 @@ package net.savagedev.tpa.velocity.model.player;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.adventure.text.Component;
+import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.model.player.AbstractProxyPlayer;
 import net.savagedev.tpa.plugin.model.server.Server;
 import net.savagedev.tpa.velocity.BungeeTpVelocityPlugin;
@@ -13,9 +14,14 @@ import java.util.UUID;
 public class VelocityPlayer extends AbstractProxyPlayer<Player, Component> {
     private final Player player;
 
-    public VelocityPlayer(Player player) {
-        super(player, BungeeTpVelocityPlugin.CHAT_MESSAGE_FORMATTING_FUNCTION);
+    public VelocityPlayer(Player player, BungeeTpPlugin plugin) {
+        super(plugin, player, BungeeTpVelocityPlugin.CHAT_MESSAGE_FORMATTING_FUNCTION);
         this.player = player;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+
     }
 
     @Override
@@ -40,12 +46,28 @@ public class VelocityPlayer extends AbstractProxyPlayer<Player, Component> {
     }
 
     @Override
+    public boolean isHidden() {
+        return false;
+    }
+
+    @Override
+    public boolean notHidden() {
+        return false;
+    }
+
+    @Override
     public Server<?> getCurrentServer() {
         return this.player.getCurrentServer()
                 .map(connection ->
-                        new VelocityServer(connection.getServerInfo().getName(), connection)
+                        new VelocityServer(connection.getServerInfo().getName(), connection.getServer())
                 )
                 .orElse(null);
+    }
+
+    @Override
+    protected String getCurrentServerId() {
+        return this.player.getCurrentServer()
+                .orElseThrow(() -> new IllegalStateException("Player not loaded.")).getServerInfo().getName();
     }
 
     @Override

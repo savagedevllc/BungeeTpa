@@ -8,8 +8,11 @@ import net.savagedev.tpa.plugin.listeners.AbstractConnectionListener;
 import net.savagedev.tpa.velocity.model.player.VelocityPlayer;
 
 public class VelocityConnectionListener extends AbstractConnectionListener {
+    private final BungeeTpPlugin plugin;
+
     public VelocityConnectionListener(BungeeTpPlugin plugin) {
         super(plugin);
+        this.plugin = plugin;
     }
 
     @Subscribe
@@ -20,6 +23,6 @@ public class VelocityConnectionListener extends AbstractConnectionListener {
     @Subscribe
     public void on(DisconnectEvent event) {
         super.handleDisconnectEvent(super.plugin.getPlayer(event.getPlayer().getUsername())
-                .orElse(new VelocityPlayer(event.getPlayer())));
+                .orElse(new VelocityPlayer(event.getPlayer(), this.plugin)));
     }
 }

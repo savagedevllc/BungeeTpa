@@ -31,7 +31,7 @@ public class VelocityCommand implements SimpleCommand {
         }
 
         final ProxyPlayer<?, ?> player = this.plugin.getPlayer(((Player) invocation.source()).getUniqueId())
-                .orElse(new VelocityPlayer((Player) invocation.source()));
+                .orElse(new VelocityPlayer((Player) invocation.source(), this.plugin));
 
         this.command.execute(player, invocation.arguments());
     }
@@ -43,7 +43,7 @@ public class VelocityCommand implements SimpleCommand {
         }
 
         final ProxyPlayer<?, ?> player = this.plugin.getPlayer(((Player) invocation.source()).getUniqueId())
-                .orElse(new VelocityPlayer((Player) invocation.source()));
+                .orElse(new VelocityPlayer((Player) invocation.source(), this.plugin));
 
         return CompletableFuture.completedFuture(new ArrayList<>(this.command.complete(player, invocation.arguments())));
     }

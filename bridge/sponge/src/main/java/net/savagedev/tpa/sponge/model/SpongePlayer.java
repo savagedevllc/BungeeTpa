@@ -2,10 +2,12 @@ package net.savagedev.tpa.sponge.model;
 
 import net.kyori.adventure.text.Component;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.common.messaging.messages.Message;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerLocation;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,6 +17,7 @@ public class SpongePlayer implements BungeeTpPlayer {
     public SpongePlayer(ServerPlayer player) {
         this.player = player;
     }
+
 
     @Override
     public void teleportTo(BungeeTpPlayer target) {

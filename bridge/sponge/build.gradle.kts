@@ -13,6 +13,7 @@ version = project.parent?.version!!
 dependencies {
     implementation("org.bstats:bstats-sponge:3.0.2")
     implementation(project(":bridge:common"))
+    implementation(project(":common"))
 }
 
 tasks {

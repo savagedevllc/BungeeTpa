@@ -20,6 +20,7 @@ dependencies {
 
     implementation("org.bstats:bstats-velocity:3.0.2")
     implementation(project(":plugin:common"))
+    implementation(project(":common"))
 }
 
 sourceSets {
