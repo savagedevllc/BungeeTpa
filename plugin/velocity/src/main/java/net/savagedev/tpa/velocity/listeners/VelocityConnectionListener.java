@@ -18,6 +18,10 @@ public class VelocityConnectionListener extends AbstractConnectionListener {
     @Subscribe
     public void on(ServerPostConnectEvent event) {
         super.handleConnectEvent(event.getPlayer().getUniqueId());
+        // TODO: This is disgusting. Do better.
+        super.handleServerConnectEvent(this.plugin.getPlayer(event.getPlayer().getUniqueId())
+                        .orElseThrow(() -> new IllegalStateException("")),
+                event.getPlayer().getCurrentServer().get().getServerInfo().getName());
     }
 
     @Subscribe

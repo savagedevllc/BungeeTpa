@@ -1,9 +1,11 @@
 package net.savagedev.tpa.sponge.messenger;
 
 import net.savagedev.tpa.bridge.messenger.BungeeTpBridgeMessenger;
+import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
 import net.savagedev.tpa.common.messaging.ChannelConstants;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.sponge.BungeeTpSpongePlugin;
+import net.savagedev.tpa.sponge.model.SpongePlayer;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.network.EngineConnectionSide;
@@ -12,11 +14,10 @@ import org.spongepowered.api.network.channel.ChannelBuf;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
 import org.spongepowered.api.network.channel.raw.play.RawPlayDataHandler;
 
-public class SpongePluginMessenger extends BungeeTpBridgeMessenger<ChannelBuf> implements RawPlayDataHandler<ServerSideConnection> {
+public class SpongePluginMessenger extends BungeeTpBridgeMessenger<BungeeTpPlayer> implements RawPlayDataHandler<ServerSideConnection> {
     private static final ResourceKey CHANNEL_KEY = ResourceKey.resolve(ChannelConstants.CHANNEL_NAME);
 
     private RawDataChannel channel;
-
 
     public SpongePluginMessenger(BungeeTpSpongePlugin plugin) {
         super(plugin);
@@ -37,7 +38,21 @@ public class SpongePluginMessenger extends BungeeTpBridgeMessenger<ChannelBuf> i
     }
 
     @Override
+    public void sendData(BungeeTpPlayer recipient, Message message) {
+        if (recipient == null) {
+            this.channel.play().sendToServer(buf -> buf.writeString(message.serialize()));
+        } else {
+            this.channel.play().sendTo((((SpongePlayer) recipient).getHandle()),
+                    buf -> buf.writeString(message.serialize()));
+        }
+    }
+
+    @Override
     public void handlePayload(ChannelBuf data, ServerSideConnection connection) {
-        super.handleIncomingMessage(connection.profile().hasName() ? connection.profile().name().get() : connection.profile().uuid().toString(), CHANNEL_KEY.asString(), data.readBytes(data.available()));
+        super.handleIncomingMessage(connection.profile().hasName() ?
+                        connection.profile().name().get() :
+                        connection.profile().uuid().toString(),
+                CHANNEL_KEY.asString(),
+                data.readBytes(data.available()));
     }
 }

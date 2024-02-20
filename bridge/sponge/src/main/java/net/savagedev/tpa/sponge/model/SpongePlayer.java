@@ -7,7 +7,6 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.world.server.ServerLocation;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,12 +17,16 @@ public class SpongePlayer implements BungeeTpPlayer {
         this.player = player;
     }
 
+    @Override
+    public void sendData(Message message) {
+        throw new UnsupportedOperationException("not available on this platform");
+    }
 
     @Override
     public void teleportTo(BungeeTpPlayer target) {
         final Optional<ServerPlayer> targetOptional = Sponge.server().player(target.getUniqueId());
 
-        if (targetOptional.isEmpty()) {
+        if (!targetOptional.isPresent()) {
             throw new IllegalStateException("Cannot teleport to a null player");
         }
 
@@ -38,5 +41,9 @@ public class SpongePlayer implements BungeeTpPlayer {
     @Override
     public UUID getUniqueId() {
         return this.player.uniqueId();
+    }
+
+    public ServerPlayer getHandle() {
+        return this.player;
     }
 }

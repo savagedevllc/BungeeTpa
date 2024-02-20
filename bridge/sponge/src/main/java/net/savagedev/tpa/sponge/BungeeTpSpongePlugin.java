@@ -7,7 +7,7 @@ import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
 import net.savagedev.tpa.common.messaging.Messenger;
-import net.savagedev.tpa.sponge.hook.SpongeEconomyHook;
+import net.savagedev.tpa.sponge.hook.economy.SpongeEconomyHook;
 import net.savagedev.tpa.sponge.listener.ConnectionListener;
 import net.savagedev.tpa.sponge.messenger.SpongePluginMessenger;
 import net.savagedev.tpa.sponge.model.SpongePlayer;
@@ -33,6 +33,7 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     private static final int B_STATS_ID = 20996;
 
     private final BungeeTpBridgePlugin plugin = new BungeeTpBridgePlugin(this);
+    private final Messenger<BungeeTpPlayer> messenger = new SpongePluginMessenger(this);
 
     @Inject
     public Logger logger;
@@ -44,7 +45,7 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     private Metrics.Factory metricsFactory;
 
     @Listener
-    public void on(StartedEngineEvent<Server> event) {
+    public void on(StartedEngineEvent<Server> ignored) {
         Sponge.eventManager().registerListeners(this.container, new ConnectionListener(this));
         this.plugin.enable();
 
@@ -73,7 +74,7 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
 
     @Override
     public Messenger<BungeeTpPlayer> getMessenger() {
-        return new SpongePluginMessenger(this);
+        return this.messenger;
     }
 
     @Override
@@ -116,5 +117,11 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     @Override
     public int getMaxPlayers() {
         return Sponge.server().maxPlayers();
+    }
+
+    // Yes, this is a weird way of doing it, but this platform uses Log4j, and Spigot uses Java's built-in logging utility class.
+    // And I'd rather just use the logger native to the platform than worry about maintaining my own.
+    public Logger getLogger() {
+        return this.logger;
     }
 }

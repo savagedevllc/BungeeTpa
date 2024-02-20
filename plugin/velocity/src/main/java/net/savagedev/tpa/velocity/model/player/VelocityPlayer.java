@@ -26,8 +26,11 @@ public class VelocityPlayer extends AbstractProxyPlayer<Player, Component> {
 
     @Override
     public boolean connect(Server<?> server) {
-        this.player.createConnectionRequest(((ServerConnection) server.getHandle()).getServer()).connect();
-        return true;
+        final boolean canAccess = server.isAccessibleTo(this);
+        if (canAccess) {
+            this.player.createConnectionRequest(((ServerConnection) server.getHandle()).getServer()).connect();
+        }
+        return canAccess;
     }
 
     @Override

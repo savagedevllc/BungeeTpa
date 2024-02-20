@@ -7,6 +7,10 @@ import net.savagedev.tpa.plugin.messenger.BungeeTpMessenger;
 import net.savagedev.tpa.plugin.model.server.Server;
 import net.savagedev.tpa.velocity.BungeeTpVelocityPlugin;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 public class VelocityPluginMessenger extends BungeeTpMessenger<Server<?>> {
     private final BungeeTpVelocityPlugin plugin;
 
@@ -27,5 +31,16 @@ public class VelocityPluginMessenger extends BungeeTpMessenger<Server<?>> {
 
     @Override
     public void sendData(Server<?> server, Message message) {
+        if (server == null) {
+            throw new IllegalStateException("Recipient cannot be null!");
+        }
+
+        try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+             final DataOutputStream outputStream = new DataOutputStream(byteStream)) {
+            outputStream.writeUTF(message.serialize());
+            server.sendData(ChannelConstants.CHANNEL_NAME, byteStream.toByteArray());
+        } catch (IOException e) {
+            this.plugin.getLogger().warning("Failed to send plugin message: " + e.getMessage());
+        }
     }
 }
