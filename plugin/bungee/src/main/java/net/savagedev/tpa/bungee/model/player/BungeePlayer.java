@@ -13,16 +13,9 @@ import java.util.UUID;
 public class BungeePlayer extends AbstractProxyPlayer<ProxiedPlayer, BaseComponent[]> {
     private final ProxiedPlayer player;
 
-    private boolean hidden = false;
-
     public BungeePlayer(ProxiedPlayer player, BungeeTpPlugin plugin) {
         super(plugin, player, BungeeTpBungeePlugin.CHAT_MESSAGE_FORMATTING_FUNCTION);
         this.player = player;
-    }
-
-    @Override
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
     }
 
     @Override
@@ -47,16 +40,6 @@ public class BungeePlayer extends AbstractProxyPlayer<ProxiedPlayer, BaseCompone
     @Override
     public boolean isConnected() {
         return this.player.isConnected();
-    }
-
-    @Override
-    public boolean isHidden() {
-        return this.hidden;
-    }
-
-    @Override
-    public boolean notHidden() {
-        return !this.hidden;
     }
 
     @Override

@@ -11,6 +11,8 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
 
     private final BungeeTpPlugin plugin;
 
+    private boolean hidden = false;
+
     public AbstractProxyPlayer(BungeeTpPlugin plugin, T handle, Function<String, M> messageFormattingFunction) {
         this.messageFormattingFunction = messageFormattingFunction;
         this.handle = handle;
@@ -24,12 +26,27 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
     }
 
     @Override
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @Override
     public Server<?> getCurrentServer() {
         return this.plugin.getServerManager().getOrLoad(this.getCurrentServerId())
                 .orElseThrow(() -> new IllegalStateException("Player not loaded."));
     }
 
     protected abstract String getCurrentServerId();
+
+    @Override
+    public boolean isHidden() {
+        return this.hidden;
+    }
+
+    @Override
+    public boolean notHidden() {
+        return !this.hidden;
+    }
 
     @Override
     public T getHandle() {

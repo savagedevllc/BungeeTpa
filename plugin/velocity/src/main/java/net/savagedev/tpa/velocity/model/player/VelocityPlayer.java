@@ -20,11 +20,6 @@ public class VelocityPlayer extends AbstractProxyPlayer<Player, Component> {
     }
 
     @Override
-    public void setHidden(boolean hidden) {
-
-    }
-
-    @Override
     public void sendMessage(Component message) {
         this.player.sendMessage(message);
     }
@@ -43,16 +38,6 @@ public class VelocityPlayer extends AbstractProxyPlayer<Player, Component> {
     @Override
     public boolean isConnected() {
         return this.player.isActive();
-    }
-
-    @Override
-    public boolean isHidden() {
-        return false;
-    }
-
-    @Override
-    public boolean notHidden() {
-        return false;
     }
 
     @Override
