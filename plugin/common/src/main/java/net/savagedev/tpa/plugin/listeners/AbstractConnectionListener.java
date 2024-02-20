@@ -7,10 +7,14 @@ import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 import net.savagedev.tpa.plugin.model.server.Server;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public abstract class AbstractConnectionListener {
     protected final BungeeTpPlugin plugin;
+
+    private Set<String> warningsSent = new HashSet<>();
 
     public AbstractConnectionListener(BungeeTpPlugin plugin) {
         this.plugin = plugin;
@@ -32,10 +36,10 @@ public abstract class AbstractConnectionListener {
         this.plugin.getPlatform().scheduleTaskDelayed(() -> {
             this.plugin.getPlatform().getMessenger().sendData(player.getCurrentServer(), new MessageBasicServerInfoRequest());
             this.plugin.getPlatform().scheduleTaskDelayed((() -> {
-                if (server.hasSentBasicInfo()) {
+                if (server.hasSentBasicInfo() || !this.warningsSent.add(serverId)) {
                     return;
                 }
-                this.plugin.getLogger().warning("BungeeTP bridge not detected on the server " + serverId + ". Is it installed?");
+                this.plugin.getLogger().warning("BungeeTP bridge not detected on the server '" + serverId + ".' Is it installed?");
             }), 3000L); // Give it some time to receive the message & update the ServerManager.
         }, 250);
     }

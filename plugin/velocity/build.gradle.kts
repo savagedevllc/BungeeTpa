@@ -1,6 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow").version("8.1.1")
-    id("net.kyori.blossom").version("2.0.0")
+
+    id("net.kyori.blossom").version("2.0.1")
 }
 
 group = project.parent!!.group

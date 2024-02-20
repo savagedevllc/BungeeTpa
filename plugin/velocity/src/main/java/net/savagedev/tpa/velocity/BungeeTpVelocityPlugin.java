@@ -10,6 +10,7 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
+import net.savagedev.build.BuildParameters;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.plugin.BungeeTpPlatform;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
@@ -31,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
-@Plugin(id = "velocitytp", name = "VelocityTP", version = "${version}",
+@Plugin(id = "velocitytp", name = "VelocityTP", version = BuildParameters.VERSION,
         url = "https://www.savagedev.net", description = "Teleport across a Velocity network.", authors = {"SavageAvocado"})
 public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     private static final int B_STATS_ID = 20994;
@@ -40,7 +41,7 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
 
     private final BungeeTpPlugin plugin;
     private final Path dataPath;
-    private final VelocityPluginMessenger messenger;
+    private final VelocityPluginMessenger messenger = new VelocityPluginMessenger(this);
 
     private final ProxyServer server;
     private final Logger logger;
@@ -52,12 +53,11 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
         this.logger = logger;
         this.dataPath = dataPath;
         this.metricsFactory = metricsFactory;
-        this.messenger = new VelocityPluginMessenger(this);
         this.plugin = new BungeeTpPlugin(this, new VelocityPlayerLoaderFunction(this), new VelocityServerLoaderFunction(this.server));
     }
 
     @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event) {
+    public void onProxyInitialization(ProxyInitializeEvent ignored) {
         this.server.getEventManager().register(this, new VelocityConnectionListener(this.plugin));
         this.plugin.enable();
 
@@ -65,7 +65,7 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     }
 
     @Subscribe
-    public void onProxyShutdown(ProxyShutdownEvent event) {
+    public void onProxyShutdown(ProxyShutdownEvent ignored) {
         this.plugin.disable();
     }
 

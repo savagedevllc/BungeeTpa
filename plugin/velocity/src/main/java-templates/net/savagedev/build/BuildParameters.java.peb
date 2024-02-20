@@ -1,0 +1,5 @@
+package net.savagedev.build;
+
+public class BuildParameters {
+    public static final String VERSION = "{# @pebvariable name="version" type="java.lang.String" #}{{ version }}";
+}

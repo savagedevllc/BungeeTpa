@@ -1,5 +1,10 @@
 package net.savagedev.tpa.velocity.messenger;
 
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.PluginMessageEvent;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.messages.ChannelMessageSource;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import net.savagedev.tpa.common.messaging.ChannelConstants;
 import net.savagedev.tpa.common.messaging.messages.Message;
@@ -12,6 +17,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class VelocityPluginMessenger extends BungeeTpMessenger<Server<?>> {
+    private static final MinecraftChannelIdentifier CHANNEL_IDENTIFIER = MinecraftChannelIdentifier.from(ChannelConstants.CHANNEL_NAME);
+
     private final BungeeTpVelocityPlugin plugin;
 
     public VelocityPluginMessenger(BungeeTpVelocityPlugin plugin) {
@@ -21,12 +28,27 @@ public class VelocityPluginMessenger extends BungeeTpMessenger<Server<?>> {
 
     @Override
     public void init() {
-        this.plugin.getServer().getChannelRegistrar().register(MinecraftChannelIdentifier.from(ChannelConstants.CHANNEL_NAME));
+        this.plugin.getServer().getChannelRegistrar().register(CHANNEL_IDENTIFIER);
+        this.plugin.getServer().getEventManager().register(this.plugin, this);
     }
 
     @Override
     public void shutdown() {
-        this.plugin.getServer().getChannelRegistrar().unregister(MinecraftChannelIdentifier.from(ChannelConstants.CHANNEL_NAME));
+        this.plugin.getServer().getChannelRegistrar().unregister(CHANNEL_IDENTIFIER);
+    }
+
+    @Subscribe
+    public void on(PluginMessageEvent event) {
+        final ChannelMessageSource source = event.getSource();
+
+        String serverId = null;
+        if (source instanceof Player) {
+            serverId = ((Player) source).getUsername();
+        } else if (source instanceof ServerConnection) {
+            serverId = ((ServerConnection) source).getServerInfo().getName();
+        }
+
+        super.handleIncomingMessage(serverId, event.getIdentifier().getId(), event.getData());
     }
 
     @Override
