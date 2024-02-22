@@ -14,7 +14,7 @@ import java.util.UUID;
 public abstract class AbstractConnectionListener {
     protected final BungeeTpPlugin plugin;
 
-    private Set<String> warningsSent = new HashSet<>();
+    private final Set<String> warningsSent = new HashSet<>();
 
     public AbstractConnectionListener(BungeeTpPlugin plugin) {
         this.plugin = plugin;
