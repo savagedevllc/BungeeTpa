@@ -41,7 +41,7 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
 
     private final BungeeTpPlugin plugin;
     private final Path dataPath;
-    private final VelocityPluginMessenger messenger = new VelocityPluginMessenger(this);
+    private final VelocityPluginMessenger messenger;
 
     private final ProxyServer server;
     private final Logger logger;
@@ -54,6 +54,7 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
         this.dataPath = dataPath;
         this.metricsFactory = metricsFactory;
         this.plugin = new BungeeTpPlugin(this, new VelocityPlayerLoaderFunction(this), new VelocityServerLoaderFunction(this.server));
+        this.messenger = new VelocityPluginMessenger(this);
     }
 
     @Subscribe

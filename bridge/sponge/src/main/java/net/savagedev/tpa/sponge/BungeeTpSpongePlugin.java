@@ -59,7 +59,13 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
 
     @Override
     public void scheduleAsync(Runnable runnable, long delay, long period) {
-
+        final Task task = Task.builder()
+                .delay(delay, TimeUnit.MILLISECONDS)
+                .interval(period, TimeUnit.MICROSECONDS)
+                .execute(runnable)
+                .plugin(this.container)
+                .build();
+        Sponge.server().scheduler().submit(task);
     }
 
     @Override
@@ -117,11 +123,5 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     @Override
     public int getMaxPlayers() {
         return Sponge.server().maxPlayers();
-    }
-
-    // Yes, this is a weird way of doing it, but this platform uses Log4j, and Spigot uses Java's built-in logging utility class.
-    // And I'd rather just use the logger native to the platform than worry about maintaining my own.
-    public Logger getLogger() {
-        return this.logger;
     }
 }

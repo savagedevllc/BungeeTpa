@@ -1,7 +1,7 @@
 package net.savagedev.tpa.velocity.model.player;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.model.player.AbstractProxyPlayer;
@@ -28,7 +28,7 @@ public class VelocityPlayer extends AbstractProxyPlayer<Player, Component> {
     public boolean connect(Server<?> server) {
         final boolean canAccess = server.isAccessibleTo(this);
         if (canAccess) {
-            this.player.createConnectionRequest(((ServerConnection) server.getHandle()).getServer()).connect();
+            this.player.createConnectionRequest(((RegisteredServer) server.getHandle())).connect();
         }
         return canAccess;
     }

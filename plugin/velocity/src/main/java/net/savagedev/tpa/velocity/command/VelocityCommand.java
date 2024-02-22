@@ -8,6 +8,8 @@ import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.velocity.model.player.VelocityPlayer;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,7 +47,12 @@ public class VelocityCommand implements SimpleCommand {
         final ProxyPlayer<?, ?> player = this.plugin.getPlayer(((Player) invocation.source()).getUniqueId())
                 .orElse(new VelocityPlayer((Player) invocation.source(), this.plugin));
 
-        return CompletableFuture.completedFuture(new ArrayList<>(this.command.complete(player, invocation.arguments())));
+        final Collection<String> completions = this.command.complete(player, invocation.arguments());
+        if (completions == null) {
+            return CompletableFuture.completedFuture(Collections.emptyList());
+        }
+
+        return CompletableFuture.completedFuture(new ArrayList<>(completions));
     }
 
     @Override
