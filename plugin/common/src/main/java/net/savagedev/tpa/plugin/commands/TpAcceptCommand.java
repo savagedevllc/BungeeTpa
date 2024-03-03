@@ -20,7 +20,7 @@ public class TpAcceptCommand extends AbstractRequestResponseCommand {
                 return;
             }
 
-            if (request.getSender().hasPermission("bungeetp.delay.bypass")) {
+            if (request.getSender().canBypassDelay()) {
                 Lang.TPA_REQUEST_ACCEPTED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
             } else {
                 Lang.TPA_REQUEST_ACCEPTED_DELAYED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()),
@@ -34,7 +34,7 @@ public class TpAcceptCommand extends AbstractRequestResponseCommand {
                 return;
             }
 
-            if (request.getReceiver().hasPermission("bungeetp.delay.bypass")) {
+            if (request.getReceiver().canBypassDelay()) {
                 Lang.TPA_HERE_REQUEST_ACCEPT.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
             } else {
                 Lang.TPA_HERE_REQUEST_ACCEPT_DELAYED.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()),

@@ -12,6 +12,6 @@ public class TpHereCommand extends AbstractTeleportCommand {
     @Override
     protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
         Lang.TELEPORT_HERE.send(player, new Lang.Placeholder("%player%", other.getName()));
-        this.plugin.getTeleportManager().teleport(other, player);
+        this.plugin.getTeleportManager().teleportAsync(other, player);
     }
 }

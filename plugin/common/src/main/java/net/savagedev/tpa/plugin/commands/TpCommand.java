@@ -12,6 +12,6 @@ public class TpCommand extends AbstractTeleportCommand {
     @Override
     protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
         Lang.TELEPORTING.send(player, new Lang.Placeholder("%player%", other.getName()));
-        this.plugin.getTeleportManager().teleport(player, other);
+        this.plugin.getTeleportManager().teleportAsync(player, other);
     }
 }

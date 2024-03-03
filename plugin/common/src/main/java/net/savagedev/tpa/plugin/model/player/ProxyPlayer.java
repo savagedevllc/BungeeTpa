@@ -15,6 +15,8 @@ public interface ProxyPlayer<T, M> {
 
     boolean hasPermission(String permission);
 
+    boolean canBypassDelay();
+
     boolean isConnected();
 
     boolean isHidden();

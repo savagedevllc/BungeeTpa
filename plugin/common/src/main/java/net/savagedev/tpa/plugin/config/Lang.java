@@ -11,6 +11,8 @@ public enum Lang {
     RESTRICTED_SERVER("restricted_server"),
     TELEPORT_SELF("teleport_self"),
     NO_REQUESTS("no_requests"),
+    REQUEST_CANCELLED_SENDER("request_cancelled_sender"),
+    REQUEST_CANCELLED_RECEIVER("request_cancelled_receiver"),
     TELEPORTING("teleporting"),
     TELEPORT_HERE("teleport_here"),
     TPA_REQUEST_SENT("tpa_request_sent"),
@@ -66,7 +68,7 @@ public enum Lang {
 
     public <M> void send(ProxyPlayer<?, M> player, Placeholder... placeholders) {
         String message = s_RootNode.node(this.key).getString();
-        if (message == null || message.isBlank()) {
+        if (message == null || message.isEmpty()) {
             return; // Nothing to send. The message is null, or empty.
         }
 

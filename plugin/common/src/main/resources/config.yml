@@ -1,4 +1,4 @@
-# How long the player will have to wait before being teleported.
+# How long the player will have to wait before being teleported. Can be bypassed with the permission bungeetp.bypass.delay
 delay: 3 # Seconds
 
 # How long it will take for teleport requests to expire.
@@ -7,7 +7,12 @@ expire: 180 # Seconds
 # How should times be formatted? (LONG: "hours", "minutes", "seconds" or SHORT: "h", "m", "s")
 time-format: LONG
 
-# A list of servers that players will not be allowed to teleport to.
+# A list of servers that players will not be allowed to teleport to. Can be bypassed with the permission bungeetp.bypass.blacklist
 blacklist:
   - build
   - events
+
+# Economy can be bypassed with the permission bungeetp.bypass.economy
+economy:
+  # How much it costs to teleport to another player. If the request is a tpahere request, the charge will be applied to the sender.
+  teleport-cost: 0.0

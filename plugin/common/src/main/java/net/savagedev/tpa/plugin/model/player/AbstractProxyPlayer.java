@@ -39,6 +39,11 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
     protected abstract String getCurrentServerId();
 
     @Override
+    public boolean canBypassDelay() {
+        return this.hasPermission("bungeetp.delay.bypass") || this.hasPermission("bungeetp.bypass.delay");
+    }
+
+    @Override
     public boolean isHidden() {
         return this.hidden;
     }

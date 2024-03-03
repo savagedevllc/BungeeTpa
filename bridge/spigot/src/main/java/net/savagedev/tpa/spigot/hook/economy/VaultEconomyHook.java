@@ -24,7 +24,7 @@ public class VaultEconomyHook extends AbstractEconomyHook {
     @Override
     public double withdraw(BungeeTpPlayer player, double amount) {
         if (this.economy == null) {
-            return 0.0;
+            throw new IllegalStateException("");
         }
         return this.economy.withdrawPlayer(((SpigotPlayer) player).getHandle(), amount).balance;
     }
@@ -32,7 +32,7 @@ public class VaultEconomyHook extends AbstractEconomyHook {
     @Override
     public double getBalance(BungeeTpPlayer player) {
         if (this.economy == null) {
-            return 0.0;
+            throw new IllegalStateException("");
         }
         return this.economy.getBalance(((SpigotPlayer) player).getHandle());
     }

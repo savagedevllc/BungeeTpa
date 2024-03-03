@@ -1,9 +1,11 @@
 package net.savagedev.tpa.plugin;
 
 import net.savagedev.tpa.plugin.commands.TpAcceptCommand;
+import net.savagedev.tpa.plugin.commands.TpCancelCommand;
 import net.savagedev.tpa.plugin.commands.TpCommand;
 import net.savagedev.tpa.plugin.commands.TpDenyCommand;
 import net.savagedev.tpa.plugin.commands.TpHereCommand;
+import net.savagedev.tpa.plugin.commands.TpToggleCommand;
 import net.savagedev.tpa.plugin.commands.TpaCommand;
 import net.savagedev.tpa.plugin.commands.TpaHereCommand;
 import net.savagedev.tpa.plugin.commands.admin.BungeeTpAdminCommand;
@@ -107,9 +109,11 @@ public class BungeeTpPlugin {
         this.platform.registerCommand(new TpAcceptCommand(this), "tpaccept", "bungeetp.accept");
         this.platform.registerCommand(new TpaCommand(this), "tpa", "bungeetp.tpa");
         this.platform.registerCommand(new TpaHereCommand(this), "tpahere", "bungeetp.tpahere");
+        this.platform.registerCommand(new TpCancelCommand(this), "tpcancel", "bungeetp.cancel");
         this.platform.registerCommand(new TpCommand(this), "tp", "bungeetp.tp");
         this.platform.registerCommand(new TpDenyCommand(this), "tpdeny", "bungeetp.deny");
         this.platform.registerCommand(new TpHereCommand(this), "tphere", "bungeetp.tphere", "s");
+        this.platform.registerCommand(new TpToggleCommand(), "tptoggle", "bungeetp.toggle");
     }
 
     public ServerManager getServerManager() {
