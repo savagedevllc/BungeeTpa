@@ -27,11 +27,17 @@ public class TpCancelCommand implements BungeeTpCommand {
             return;
         }
 
-        final ProxyPlayer<?, ?> receiver = optionalRequest.get().getReceiver();
-        if (receiver.isConnected()) {
-            Lang.REQUEST_CANCELLED_RECEIVER.send(receiver, new Placeholder("%player%", player.getName()));
-        }
-        Lang.REQUEST_CANCELLED_SENDER.send(player, new Placeholder("%player%", receiver.getName()));
+        player.deposit(100.0d).whenComplete((response, err) -> {
+            if (err != null) {
+                return;
+            }
+
+            final ProxyPlayer<?, ?> receiver = optionalRequest.get().getReceiver();
+            if (receiver.isConnected()) {
+                Lang.REQUEST_CANCELLED_RECEIVER.send(receiver, new Placeholder("%player%", player.getName()));
+            }
+            Lang.REQUEST_CANCELLED_SENDER.send(player, new Placeholder("%player%", receiver.getName()));
+        });
     }
 
     @Override

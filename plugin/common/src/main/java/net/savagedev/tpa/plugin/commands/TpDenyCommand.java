@@ -11,12 +11,18 @@ public class TpDenyCommand extends AbstractRequestResponseCommand {
 
     @Override
     protected void respond(TeleportRequest request) {
-        if (request.getDirection() == TeleportRequest.Direction.TO_RECEIVER) {
-            Lang.TPA_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
-            Lang.TPA_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
-        } else {
-            Lang.TPA_HERE_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
-            Lang.TPA_HERE_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
-        }
+        request.getSender().deposit(100.0d).whenComplete((response, err) -> {
+            if (err != null) {
+                return;
+            }
+
+            if (request.getDirection() == TeleportRequest.Direction.TO_RECEIVER) {
+                Lang.TPA_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
+                Lang.TPA_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
+            } else {
+                Lang.TPA_HERE_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
+                Lang.TPA_HERE_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
+            }
+        });
     }
 }

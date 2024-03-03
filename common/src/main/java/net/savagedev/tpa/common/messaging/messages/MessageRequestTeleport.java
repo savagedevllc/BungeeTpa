@@ -6,8 +6,8 @@ import java.util.UUID;
 
 public class MessageRequestTeleport extends Message {
     public static MessageRequestTeleport deserialize(JsonObject object) {
-        final long requesterMostSigBits = object.get("req_mbs").getAsLong();
-        final long requesterLeastSigBits = object.get("req_lbs").getAsLong();
+        final long requesterMostSigBits = object.get("req_msb").getAsLong();
+        final long requesterLeastSigBits = object.get("req_lsb").getAsLong();
         final UUID requester = new UUID(requesterMostSigBits, requesterLeastSigBits);
 
         final long senderMostSigBits = object.get("rec_msb").getAsLong();
@@ -49,7 +49,7 @@ public class MessageRequestTeleport extends Message {
     @Override
     protected JsonObject asJsonObject() {
         final JsonObject object = new JsonObject();
-        object.addProperty("req_mbs", this.requester.getMostSignificantBits());
+        object.addProperty("req_msb", this.requester.getMostSignificantBits());
         object.addProperty("req_lsb", this.requester.getLeastSignificantBits());
         object.addProperty("rec_msb", this.receiver.getMostSignificantBits());
         object.addProperty("rec_lsb", this.receiver.getLeastSignificantBits());
