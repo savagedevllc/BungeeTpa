@@ -6,7 +6,9 @@ import java.util.UUID;
 
 public class MessagePlayerInfo extends Message {
     public static MessagePlayerInfo deserialize(JsonObject object) {
-        return new MessagePlayerInfo(UUID.fromString(object.get("uuid").getAsString()), object.get("hidden").getAsBoolean());
+        final long mostSigBits = object.get("msb").getAsLong();
+        final long leastSigBits = object.get("lsb").getAsLong();
+        return new MessagePlayerInfo(new UUID(mostSigBits, leastSigBits), object.get("hidden").getAsBoolean());
     }
 
     private final UUID uniqueId;
@@ -29,7 +31,8 @@ public class MessagePlayerInfo extends Message {
     @Override
     protected JsonObject asJsonObject() {
         final JsonObject object = new JsonObject();
-        object.addProperty("uuid", this.uniqueId.toString());
+        object.addProperty("msb", this.uniqueId.getMostSignificantBits());
+        object.addProperty("lsb", this.uniqueId.getLeastSignificantBits());
         object.addProperty("hidden", this.hidden);
         return object;
     }

@@ -39,9 +39,16 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
             return;
         }
 
+        if (message instanceof MessageEconomyWithdrawRequest) {
+            this.handleEconomyRequest((MessageEconomyWithdrawRequest) message);
+        }
+
         if (message instanceof MessageBasicServerInfoRequest) {
             this.handleBasicInfoRequest((MessageBasicServerInfoRequest) message);
         }
+    }
+
+    private void handleEconomyRequest(MessageEconomyWithdrawRequest request) {
     }
 
     private void handleTeleportRequest(MessageRequestTeleport request) {
