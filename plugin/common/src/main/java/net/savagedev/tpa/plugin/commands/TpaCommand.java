@@ -19,7 +19,7 @@ public class TpaCommand extends AbstractTeleportCommand {
         final Server<?> currentServer = player.getCurrentServer();
         if (currentServer.hasEconomySupport()) {
             player.sendMessage("Requesting balance from current server...");
-            player.withdraw(100.0d).whenComplete((response, err) -> {
+            player.withdraw(Setting.TELEPORT_COST.asFloat()).whenComplete((response, err) -> {
                 if (err != null) {
                     return;
                 }

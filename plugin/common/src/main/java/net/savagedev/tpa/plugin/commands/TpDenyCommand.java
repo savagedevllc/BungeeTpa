@@ -2,6 +2,7 @@ package net.savagedev.tpa.plugin.commands;
 
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.config.Lang;
+import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 
 public class TpDenyCommand extends AbstractRequestResponseCommand {
@@ -11,7 +12,7 @@ public class TpDenyCommand extends AbstractRequestResponseCommand {
 
     @Override
     protected void respond(TeleportRequest request) {
-        request.getSender().deposit(100.0d).whenComplete((response, err) -> {
+        request.getSender().deposit(Setting.TELEPORT_COST.asFloat()).whenComplete((response, err) -> {
             if (err != null) {
                 return;
             }

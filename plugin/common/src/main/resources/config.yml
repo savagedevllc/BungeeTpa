@@ -12,7 +12,5 @@ blacklist:
   - build
   - events
 
-# Economy can be bypassed with the permission bungeetp.bypass.economy
-economy:
-  # How much it costs to teleport to another player. If the request is a tpahere request, the charge will be applied to the sender.
-  teleport-cost: 0.0
+# How much it costs to teleport to another player. Economy can be bypassed with the permission bungeetp.bypass.economy
+teleport-cost: 0.0

@@ -11,7 +11,8 @@ public enum Setting {
     DELAY("delay"),
     TP_REQUEST_EXPIRE("expire"),
     TIME_FORMAT("time-format"),
-    BLACKLIST("blacklist");
+    BLACKLIST("blacklist"),
+    TELEPORT_COST("teleport-cost");
 
     private static ConfigurationLoader s_Loader;
     private static ConfigurationNode s_RootNode;

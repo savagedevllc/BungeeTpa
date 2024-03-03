@@ -4,6 +4,7 @@ import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.command.BungeeTpCommand;
 import net.savagedev.tpa.plugin.config.Lang;
 import net.savagedev.tpa.plugin.config.Lang.Placeholder;
+import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 
@@ -27,7 +28,7 @@ public class TpCancelCommand implements BungeeTpCommand {
             return;
         }
 
-        player.deposit(100.0d).whenComplete((response, err) -> {
+        player.deposit(Setting.TELEPORT_COST.asFloat()).whenComplete((response, err) -> {
             if (err != null) {
                 return;
             }

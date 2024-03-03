@@ -61,8 +61,8 @@ public abstract class AbstractServer<T> implements Server<T> {
 
     @Override
     public boolean isAccessibleTo(ProxyPlayer<?, ?> player) {
-        return Setting.BLACKLIST.asStringList().stream()
-                .noneMatch(server -> server.equalsIgnoreCase(this.getId())) && this.canAccess(player);
+        return (player.hasPermission("bungeetp.bypass.blacklist") || Setting.BLACKLIST.asStringList().stream()
+                .noneMatch(server -> server.equalsIgnoreCase(this.getId()))) && this.canAccess(player);
     }
 
     @Override
