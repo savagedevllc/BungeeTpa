@@ -5,9 +5,9 @@ import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
 import net.savagedev.tpa.common.messaging.messages.Message;
-import net.savagedev.tpa.common.messaging.messages.MessageBalanceWithdrawRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
+import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
 
@@ -21,7 +21,7 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
     static {
         DECODER_FUNCTIONS.put(MessageRequestTeleport.class.getSimpleName(), MessageRequestTeleport::deserialize);
-        DECODER_FUNCTIONS.put(MessageBalanceWithdrawRequest.class.getSimpleName(), MessageBalanceWithdrawRequest::deserialize);
+        DECODER_FUNCTIONS.put(MessageEconomyWithdrawRequest.class.getSimpleName(), MessageEconomyWithdrawRequest::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoRequest.class.getSimpleName(), MessageBasicServerInfoRequest::deserialize);
     }
 
@@ -61,6 +61,6 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
     }
 
     private void handleBasicInfoRequest(MessageBasicServerInfoRequest ignored) {
-        this.sendData(new MessageBasicServerInfoResponse(this.platform.getSoftwareName(), this.platform.getEconomyProvider().isPresent()));
+        this.sendData(new MessageBasicServerInfoResponse(this.platform.getSoftwareName(), this.platform.getVersion(), this.platform.getEconomyProvider().isPresent()));
     }
 }

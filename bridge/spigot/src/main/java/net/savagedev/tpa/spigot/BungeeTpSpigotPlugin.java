@@ -95,6 +95,11 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
+    public String getVersion() {
+        return this.getDescription().getVersion();
+    }
+
+    @Override
     public String getSoftwareName() {
         return this.getServer().getName();
     }

@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 
 import java.util.UUID;
 
-public class MessageBalanceWithdrawResponse extends Message {
-    public static MessageBalanceWithdrawResponse deserialize(JsonObject object) {
+public class MessageEconomyWithdrawResponse extends Message {
+    public static MessageEconomyWithdrawResponse deserialize(JsonObject object) {
         return null;
     }
 
@@ -16,7 +16,7 @@ public class MessageBalanceWithdrawResponse extends Message {
 
     private final boolean successful;
 
-    public MessageBalanceWithdrawResponse(UUID uniqueId, double withdrawAmount, double newBalance, boolean successful) {
+    public MessageEconomyWithdrawResponse(UUID uniqueId, double withdrawAmount, double newBalance, boolean successful) {
         this.uniqueId = uniqueId;
         this.withdrawAmount = withdrawAmount;
         this.newBalance = newBalance;

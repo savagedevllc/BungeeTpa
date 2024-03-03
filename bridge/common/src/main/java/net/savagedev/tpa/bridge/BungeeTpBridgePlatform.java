@@ -28,6 +28,8 @@ public interface BungeeTpBridgePlatform {
 
     Optional<AbstractEconomyHook> getEconomyProvider();
 
+    String getVersion();
+
     String getSoftwareName();
 
     int getMaxPlayers();

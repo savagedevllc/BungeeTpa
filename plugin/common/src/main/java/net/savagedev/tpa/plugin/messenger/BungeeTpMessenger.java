@@ -3,7 +3,7 @@ package net.savagedev.tpa.plugin.messenger;
 import com.google.gson.JsonObject;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
 import net.savagedev.tpa.common.messaging.messages.Message;
-import net.savagedev.tpa.common.messaging.messages.MessageBalanceWithdrawResponse;
+import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
 import net.savagedev.tpa.common.messaging.messages.MessagePlayerInfo;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
@@ -19,7 +19,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
 
     static {
         DECODER_FUNCTIONS.put(MessagePlayerInfo.class.getSimpleName(), MessagePlayerInfo::deserialize);
-        DECODER_FUNCTIONS.put(MessageBalanceWithdrawResponse.class.getSimpleName(), MessageBalanceWithdrawResponse::deserialize);
+        DECODER_FUNCTIONS.put(MessageEconomyWithdrawResponse.class.getSimpleName(), MessageEconomyWithdrawResponse::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoResponse.class.getSimpleName(), MessageBasicServerInfoResponse::deserialize);
     }
 

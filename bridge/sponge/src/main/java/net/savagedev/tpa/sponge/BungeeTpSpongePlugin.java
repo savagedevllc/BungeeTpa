@@ -116,6 +116,11 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
+    public String getVersion() {
+        return this.container.metadata().version().toString();
+    }
+
+    @Override
     public String getSoftwareName() {
         return "Sponge";
     }

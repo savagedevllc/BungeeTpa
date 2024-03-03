@@ -36,6 +36,7 @@ tasks {
             displayName("${rootProject.name}SpongeBridge")
             entrypoint("net.savagedev.tpa.sponge.BungeeTpSpongePlugin")
             description("Teleport across a BungeeCord network.")
+            version("$version")
             dependency("spongeapi") {
                 loadOrder(PluginDependency.LoadOrder.AFTER)
                 optional(false)
