@@ -7,6 +7,8 @@ public interface Server<T> {
 
     void setEconomySupport(boolean economySupport);
 
+    void setBridgeVersion(String bridgeVersion);
+
     void sendData(String channel, byte[] data);
 
     boolean isAccessibleTo(ProxyPlayer<?, ?> player);
@@ -14,6 +16,8 @@ public interface Server<T> {
     boolean hasEconomySupport();
 
     boolean hasSentBasicInfo();
+
+    String getBridgeVersion();
 
     String getId();
 

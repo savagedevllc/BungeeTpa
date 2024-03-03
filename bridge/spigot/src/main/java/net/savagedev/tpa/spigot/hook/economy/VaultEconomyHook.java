@@ -3,6 +3,7 @@ package net.savagedev.tpa.spigot.hook.economy;
 import net.milkbowl.vault.economy.Economy;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.spigot.BungeeTpSpigotPlugin;
 import net.savagedev.tpa.spigot.model.SpigotPlayer;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -22,17 +23,29 @@ public class VaultEconomyHook extends AbstractEconomyHook {
     }
 
     @Override
-    public double withdraw(BungeeTpPlayer player, double amount) {
+    public EconomyResponse deposit(BungeeTpPlayer player, double amount) {
         if (this.economy == null) {
-            throw new IllegalStateException("");
+            throw new IllegalStateException();
         }
-        return this.economy.withdrawPlayer(((SpigotPlayer) player).getHandle(), amount).balance;
+
+        final net.milkbowl.vault.economy.EconomyResponse response = this.economy.depositPlayer(((SpigotPlayer) player).getHandle(), amount);
+        return new EconomyResponse(response.amount, response.balance, response.transactionSuccess());
+    }
+
+    @Override
+    public EconomyResponse withdraw(BungeeTpPlayer player, double amount) {
+        if (this.economy == null) {
+            throw new IllegalStateException();
+        }
+
+        final net.milkbowl.vault.economy.EconomyResponse response = this.economy.withdrawPlayer(((SpigotPlayer) player).getHandle(), amount);
+        return new EconomyResponse(response.amount, response.balance, response.transactionSuccess());
     }
 
     @Override
     public double getBalance(BungeeTpPlayer player) {
         if (this.economy == null) {
-            throw new IllegalStateException("");
+            throw new IllegalStateException();
         }
         return this.economy.getBalance(((SpigotPlayer) player).getHandle());
     }

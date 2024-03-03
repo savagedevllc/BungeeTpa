@@ -10,6 +10,8 @@ public abstract class AbstractServer<T> implements Server<T> {
     private boolean sentBasicInfo;
     private boolean economySupport;
 
+    private String bridgeVersion;
+
     public AbstractServer(String id, T handle) {
         this.id = id;
         this.handle = handle;
@@ -23,6 +25,11 @@ public abstract class AbstractServer<T> implements Server<T> {
     @Override
     public void setEconomySupport(boolean economySupport) {
         this.economySupport = economySupport;
+    }
+
+    @Override
+    public void setBridgeVersion(String bridgeVersion) {
+        this.bridgeVersion = bridgeVersion;
     }
 
     @Override
@@ -45,6 +52,11 @@ public abstract class AbstractServer<T> implements Server<T> {
     @Override
     public boolean hasEconomySupport() {
         return this.economySupport;
+    }
+
+    @Override
+    public String getBridgeVersion() {
+        return this.bridgeVersion;
     }
 
     @Override

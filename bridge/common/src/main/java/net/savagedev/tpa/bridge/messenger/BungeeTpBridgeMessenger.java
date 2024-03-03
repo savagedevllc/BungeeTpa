@@ -2,17 +2,23 @@ package net.savagedev.tpa.bridge.messenger;
 
 import com.google.gson.JsonObject;
 import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
+import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
+import net.savagedev.tpa.common.messaging.messages.AbstractEconomyRequest;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
+import net.savagedev.tpa.common.messaging.messages.MessageEconomyDepositRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
+import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -22,6 +28,7 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
     static {
         DECODER_FUNCTIONS.put(MessageRequestTeleport.class.getSimpleName(), MessageRequestTeleport::deserialize);
         DECODER_FUNCTIONS.put(MessageEconomyWithdrawRequest.class.getSimpleName(), MessageEconomyWithdrawRequest::deserialize);
+        DECODER_FUNCTIONS.put(MessageEconomyDepositRequest.class.getSimpleName(), MessageEconomyDepositRequest::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoRequest.class.getSimpleName(), MessageBasicServerInfoRequest::deserialize);
     }
 
@@ -43,19 +50,16 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
             this.handleEconomyRequest((MessageEconomyWithdrawRequest) message);
         }
 
+        if (message instanceof MessageEconomyDepositRequest) {
+            this.handleEconomyRequest((MessageEconomyDepositRequest) message);
+        }
+
         if (message instanceof MessageBasicServerInfoRequest) {
             this.handleBasicInfoRequest((MessageBasicServerInfoRequest) message);
         }
     }
 
-    private void handleEconomyRequest(MessageEconomyWithdrawRequest request) {
-    }
-
     private void handleTeleportRequest(MessageRequestTeleport request) {
-        if (request == null) {
-            return;
-        }
-
         final UUID requesterId = request.getRequester();
         final BungeeTpPlayer receiver = this.platform.getBungeeTpPlayer(request.getReceiver());
 
@@ -65,6 +69,29 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
         } else {
             this.platform.getTpCache().put(requesterId, receiver.getUniqueId());
         }
+    }
+
+    private void handleEconomyRequest(AbstractEconomyRequest request) {
+        final BungeeTpPlayer player = this.platform.getBungeeTpPlayer(request.getUniqueId());
+
+        if (player == null) {
+            return;
+        }
+
+        final Optional<AbstractEconomyHook> optionalEconomy = this.platform.getEconomyProvider();
+
+        if (!optionalEconomy.isPresent()) {
+            return;
+        }
+
+        EconomyResponse response;
+        if (request instanceof MessageEconomyDepositRequest) {
+            response = optionalEconomy.get().deposit(player, request.getAmount());
+        } else {
+            response = optionalEconomy.get().withdraw(player, request.getAmount());
+        }
+
+        this.sendData(new MessageEconomyResponse(player.getUniqueId(), response.getAmount(), response.getBalance(), response.isSuccess()));
     }
 
     private void handleBasicInfoRequest(MessageBasicServerInfoRequest ignored) {

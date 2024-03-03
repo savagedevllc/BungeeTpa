@@ -23,6 +23,14 @@ public class MessageBasicServerInfoResponse extends Message {
         return this.economySupport;
     }
 
+    public String getBridgeVersion() {
+        return this.bridgeVersion;
+    }
+
+    public String getSoftwareName() {
+        return this.softwareName;
+    }
+
     @Override
     protected JsonObject asJsonObject() {
         final JsonObject object = new JsonObject();

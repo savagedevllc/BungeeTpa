@@ -29,19 +29,19 @@ public abstract class AbstractConnectionListener {
         final Server<?> server = this.plugin.getServerManager().getOrLoad(serverId)
                 .orElseThrow(() -> new IllegalStateException("Server not loaded."));
 
-        if (server.hasSentBasicInfo()) {
-            return;
-        }
-
         this.plugin.getPlatform().scheduleTaskDelayed(() -> {
-            this.plugin.getPlatform().getMessenger().sendData(player.getCurrentServer(), new MessageBasicServerInfoRequest());
+            if (server.hasSentBasicInfo()) {
+                return;
+            }
+
+            this.plugin.getPlatform().getMessenger().sendData(server, new MessageBasicServerInfoRequest());
             this.plugin.getPlatform().scheduleTaskDelayed((() -> {
                 if (server.hasSentBasicInfo() || !this.warningsSent.add(serverId)) {
                     return;
                 }
                 this.plugin.getLogger().warning("BungeeTP bridge not detected on the server '" + serverId + ".' Is it installed?");
-            }), 3000L); // Give it some time to receive the message & update the ServerManager.
-        }, 250);
+            }), 1000L); // Give it some time to receive the message & update the ServerManager.
+        }, 1000);
     }
 
     protected void handleDisconnectEvent(ProxyPlayer<?, ?> player) {

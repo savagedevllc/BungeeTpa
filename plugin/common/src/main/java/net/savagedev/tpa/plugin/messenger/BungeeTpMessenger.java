@@ -1,16 +1,18 @@
 package net.savagedev.tpa.plugin.messenger;
 
 import com.google.gson.JsonObject;
+import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
 import net.savagedev.tpa.common.messaging.messages.Message;
-import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
+import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessagePlayerInfo;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -19,7 +21,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
 
     static {
         DECODER_FUNCTIONS.put(MessagePlayerInfo.class.getSimpleName(), MessagePlayerInfo::deserialize);
-        DECODER_FUNCTIONS.put(MessageEconomyWithdrawResponse.class.getSimpleName(), MessageEconomyWithdrawResponse::deserialize);
+        DECODER_FUNCTIONS.put(MessageEconomyResponse.class.getSimpleName(), MessageEconomyResponse::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoResponse.class.getSimpleName(), MessageBasicServerInfoResponse::deserialize);
     }
 
@@ -27,6 +29,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
 
     {
         consumers.put(MessagePlayerInfo.class.getSimpleName(), new PlayerInfoConsumer());
+        consumers.put(MessageEconomyResponse.class.getSimpleName(), new EconomyWithdrawResponseConsumer());
         consumers.put(MessageBasicServerInfoResponse.class.getSimpleName(), new ServerInfoConsumer());
     }
 
@@ -49,25 +52,31 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
     private final class PlayerInfoConsumer implements Consumer<MessagePlayerInfo> {
         @Override
         public void accept(MessagePlayerInfo playerInfo) {
-            if (playerInfo == null) {
-                return;
-            }
-
             plugin.getPlayer(playerInfo.getUniqueId())
                     .ifPresent(player -> player.setHidden(playerInfo.isHidden()));
+        }
+    }
+
+    private final class EconomyWithdrawResponseConsumer implements Consumer<MessageEconomyResponse> {
+        @Override
+        public void accept(MessageEconomyResponse economyResponse) {
+            final CompletableFuture<EconomyResponse> response = plugin.getPlayerManager().removeAwaitingResponse(economyResponse.getUniqueId());
+
+            if (response == null) {
+                return; // IDK what the hell happened if this happens...
+            }
+
+            response.complete(new EconomyResponse(economyResponse.getAmount(), economyResponse.getBalance(), economyResponse.wasSuccessful()));
         }
     }
 
     private final class ServerInfoConsumer implements Consumer<MessageBasicServerInfoResponse> {
         @Override
         public void accept(MessageBasicServerInfoResponse serverInfo) {
-            if (serverInfo == null) {
-                return;
-            }
-
             plugin.getServerManager().getOrLoad(serverInfo.getServerId())
                     .ifPresent(server -> {
                         server.setSentBasicInfo(true);
+                        server.setBridgeVersion(serverInfo.getBridgeVersion());
                         server.setEconomySupport(serverInfo.hasEconomySupport());
                     });
         }
