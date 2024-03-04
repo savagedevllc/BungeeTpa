@@ -6,13 +6,16 @@ import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.sponge.BungeeTpSpongePlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.economy.EconomyService;
-import org.spongepowered.api.service.economy.account.UniqueAccount;
+import org.spongepowered.api.service.economy.transaction.ResultType;
+import org.spongepowered.api.service.economy.transaction.TransactionResult;
 
 import java.math.BigDecimal;
 import java.util.Optional;
 
 public class SpongeEconomyHook extends AbstractEconomyHook {
-    private EconomyService economyService;
+    private static final EconomyResponse EMPTY_FAILED_ECONOMY_RESPONSE = new EconomyResponse(0, 0, false);
+
+    private EconomyService economy;
 
     private final boolean enabled;
 
@@ -23,24 +26,33 @@ public class SpongeEconomyHook extends AbstractEconomyHook {
 
         this.enabled = serviceOpt.isPresent();
         if (this.enabled) {
-            this.economyService = serviceOpt.get();
+            this.economy = serviceOpt.get();
         }
     }
 
     @Override
-    public EconomyResponse withdraw(BungeeTpPlayer player, double amount) {
-        final Optional<UniqueAccount> optionalAccount = this.economyService.findOrCreateAccount(player.getUniqueId());
-        return optionalAccount.map(account ->
-                account.withdraw(this.economyService.defaultCurrency(), BigDecimal.valueOf(amount)).amount().doubleValue()
-        ).orElse(0.0);
+    public EconomyResponse deposit(BungeeTpPlayer player, double amount) {
+        return this.economy.findOrCreateAccount(player.getUniqueId())
+                .map(account -> {
+                            final TransactionResult result = account.deposit(this.economy.defaultCurrency(), BigDecimal.valueOf(amount));
+                            return new EconomyResponse(result.amount().doubleValue(), result.account().balance(result.currency()).doubleValue(), result.result() == ResultType.SUCCESS);
+                        }
+                ).orElse(EMPTY_FAILED_ECONOMY_RESPONSE);
     }
 
     @Override
-    public double getBalance(BungeeTpPlayer player) {
-        final Optional<UniqueAccount> optionalAccount = this.economyService.findOrCreateAccount(player.getUniqueId());
-        return optionalAccount.map(account ->
-                account.balance(this.economyService.defaultCurrency()).doubleValue()
-        ).orElse(0.0);
+    public EconomyResponse withdraw(BungeeTpPlayer player, double amount) {
+        return this.economy.findOrCreateAccount(player.getUniqueId())
+                .map(account -> {
+                            final TransactionResult result = account.withdraw(this.economy.defaultCurrency(), BigDecimal.valueOf(amount));
+                            return new EconomyResponse(result.amount().doubleValue(), result.account().balance(result.currency()).doubleValue(), result.result() == ResultType.SUCCESS);
+                        }
+                ).orElse(EMPTY_FAILED_ECONOMY_RESPONSE);
+    }
+
+    @Override
+    public String format(double amount) {
+        return this.economy.defaultCurrency().format(BigDecimal.valueOf(amount)).toString();
     }
 
     @Override

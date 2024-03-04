@@ -29,13 +29,5 @@ public abstract class AbstractEconomyHook {
 
     public abstract String format(double amount);
 
-    /**
-     * Returns the player's balance.
-     *
-     * @param player - The player whose balance will be returned.
-     * @return - The player's balance.
-     */
-    public abstract double getBalance(BungeeTpPlayer player);
-
     public abstract boolean isEnabled();
 }

@@ -51,14 +51,6 @@ public class VaultEconomyHook extends AbstractEconomyHook {
     }
 
     @Override
-    public double getBalance(BungeeTpPlayer player) {
-        if (this.economy == null) {
-            throw new IllegalStateException();
-        }
-        return this.economy.getBalance(((SpigotPlayer) player).getHandle());
-    }
-
-    @Override
     public boolean isEnabled() {
         return this.economy != null;
     }
