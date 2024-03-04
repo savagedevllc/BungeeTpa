@@ -27,6 +27,8 @@ public abstract class AbstractEconomyHook {
      */
     public abstract EconomyResponse withdraw(BungeeTpPlayer player, double amount);
 
+    public abstract String format(double amount);
+
     /**
      * Returns the player's balance.
      *

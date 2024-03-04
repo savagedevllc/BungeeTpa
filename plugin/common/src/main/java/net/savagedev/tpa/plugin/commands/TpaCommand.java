@@ -6,7 +6,6 @@ import net.savagedev.tpa.plugin.config.Lang.Placeholder;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
-import net.savagedev.tpa.plugin.model.server.Server;
 import net.savagedev.tpa.plugin.utils.TimeUtils;
 
 public class TpaCommand extends AbstractTeleportCommand {
@@ -15,28 +14,8 @@ public class TpaCommand extends AbstractTeleportCommand {
     }
 
     @Override
-    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
-        final Server<?> currentServer = player.getCurrentServer();
-        if (currentServer.hasEconomySupport()) {
-            player.sendMessage("Requesting balance from current server...");
-            player.withdraw(Setting.TELEPORT_COST.asFloat()).whenComplete((response, err) -> {
-                if (err != null) {
-                    return;
-                }
-
-                if (response.isSuccess()) {
-                    this.sendRequest(player, other);
-                } else {
-                    player.sendMessage("You do not have enough to send a teleport request.");
-                }
-            });
-        } else {
-            this.sendRequest(player, other);
-        }
-    }
-
-    private void sendRequest(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
-        final boolean sent = this.plugin.getTeleportManager().addRequest(other, new TeleportRequest(player, other, TeleportRequest.Direction.TO_RECEIVER));
+    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean paid) {
+        final boolean sent = this.plugin.getTeleportManager().addRequest(other, new TeleportRequest(player, other, TeleportRequest.Direction.TO_RECEIVER, paid));
         if (sent) {
             Lang.TPA_REQUEST_RECEIVED.send(other, new Lang.Placeholder("%player%", player.getName()),
                     new Placeholder("%expires%", TimeUtils.formatTime(Setting.TP_REQUEST_EXPIRE.asLong() * 1000L, Setting.TIME_FORMAT.asTimeLengthFormat())));

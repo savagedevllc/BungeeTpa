@@ -13,6 +13,7 @@ public enum Lang {
     NO_REQUESTS("no_requests"),
     REQUEST_CANCELLED_SENDER("request_cancelled_sender"),
     REQUEST_CANCELLED_RECEIVER("request_cancelled_receiver"),
+    PAYMENT_FAILED("payment_failed"),
     TELEPORTING("teleporting"),
     TELEPORT_HERE("teleport_here"),
     TPA_REQUEST_SENT("tpa_request_sent"),

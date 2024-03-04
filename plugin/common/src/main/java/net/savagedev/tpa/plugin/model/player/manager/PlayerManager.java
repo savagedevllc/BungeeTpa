@@ -1,7 +1,7 @@
 package net.savagedev.tpa.plugin.model.player.manager;
 
-import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.plugin.model.AbstractManager;
+import net.savagedev.tpa.plugin.model.economy.RemoteEconomyResponse;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class PlayerManager extends AbstractManager<UUID, ProxyPlayer<?, ?>> {
-    private final Map<UUID, CompletableFuture<EconomyResponse>> awaitingResponse = new HashMap<>();
+    private final Map<UUID, CompletableFuture<RemoteEconomyResponse>> awaitingResponse = new HashMap<>();
 
     public PlayerManager(Function<UUID, ProxyPlayer<?, ?>> loader) {
         super(loader);
@@ -25,11 +25,11 @@ public class PlayerManager extends AbstractManager<UUID, ProxyPlayer<?, ?>> {
                 .findFirst();
     }
 
-    public void addAwaitingResponse(UUID uuid, CompletableFuture<EconomyResponse> future) {
+    public void addAwaitingResponse(UUID uuid, CompletableFuture<RemoteEconomyResponse> future) {
         this.awaitingResponse.put(uuid, future);
     }
 
-    public CompletableFuture<EconomyResponse> removeAwaitingResponse(UUID uuid) {
+    public CompletableFuture<RemoteEconomyResponse> removeAwaitingResponse(UUID uuid) {
         return this.awaitingResponse.remove(uuid);
     }
 

@@ -14,8 +14,8 @@ public class TpaHereCommand extends AbstractTeleportCommand {
     }
 
     @Override
-    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
-        final boolean sent = this.plugin.getTeleportManager().addRequest(other, new TeleportRequest(player, other, TeleportRequest.Direction.TO_SENDER));
+    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean paid) {
+        final boolean sent = this.plugin.getTeleportManager().addRequest(other, new TeleportRequest(player, other, TeleportRequest.Direction.TO_SENDER, paid));
         if (sent) {
             Lang.TPA_HERE_REQUEST_RECEIVED.send(other, new Lang.Placeholder("%player%", player.getName()),
                     new Placeholder("%expires%", TimeUtils.formatTime(Setting.TP_REQUEST_EXPIRE.asLong() * 1000L, Setting.TIME_FORMAT.asTimeLengthFormat())));

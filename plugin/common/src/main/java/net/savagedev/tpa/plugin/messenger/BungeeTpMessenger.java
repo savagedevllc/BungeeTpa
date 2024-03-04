@@ -1,13 +1,13 @@
 package net.savagedev.tpa.plugin.messenger;
 
 import com.google.gson.JsonObject;
-import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessagePlayerInfo;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
+import net.savagedev.tpa.plugin.model.economy.RemoteEconomyResponse;
 import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.util.HashMap;
@@ -60,13 +60,17 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
     private final class EconomyWithdrawResponseConsumer implements Consumer<MessageEconomyResponse> {
         @Override
         public void accept(MessageEconomyResponse economyResponse) {
-            final CompletableFuture<EconomyResponse> response = plugin.getPlayerManager().removeAwaitingResponse(economyResponse.getUniqueId());
+            final CompletableFuture<RemoteEconomyResponse> response = plugin.getPlayerManager().removeAwaitingResponse(economyResponse.getUniqueId());
 
             if (response == null) {
                 return; // IDK what the hell happened if this happens...
             }
 
-            response.complete(new EconomyResponse(economyResponse.getAmount(), economyResponse.getBalance(), economyResponse.wasSuccessful()));
+            response.complete(new RemoteEconomyResponse(economyResponse.getAmount(),
+                    economyResponse.getBalance(),
+                    economyResponse.getFormattedAmount(),
+                    economyResponse.getFormattedBalance(),
+                    economyResponse.wasSuccessful()));
         }
     }
 

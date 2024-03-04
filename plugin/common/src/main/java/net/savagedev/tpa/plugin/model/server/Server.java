@@ -13,7 +13,7 @@ public interface Server<T> {
 
     boolean isAccessibleTo(ProxyPlayer<?, ?> player);
 
-    boolean hasEconomySupport();
+    boolean hasNoEconomy();
 
     boolean hasSentBasicInfo();
 

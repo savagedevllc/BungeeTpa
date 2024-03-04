@@ -10,10 +10,13 @@ public class TeleportRequest {
 
     private final Direction direction;
 
-    public TeleportRequest(ProxyPlayer<?, ?> sender, ProxyPlayer<?, ?> receiver, Direction direction) {
+    private final boolean paid;
+
+    public TeleportRequest(ProxyPlayer<?, ?> sender, ProxyPlayer<?, ?> receiver, Direction direction, boolean paid) {
         this.sender = sender;
         this.receiver = receiver;
         this.direction = direction;
+        this.paid = paid;
     }
 
     public ProxyPlayer<?, ?> getSender() {
@@ -30,6 +33,10 @@ public class TeleportRequest {
 
     public long getTimeSent() {
         return this.timeSent;
+    }
+
+    public boolean isPaid() {
+        return this.paid;
     }
 
     public enum Direction {

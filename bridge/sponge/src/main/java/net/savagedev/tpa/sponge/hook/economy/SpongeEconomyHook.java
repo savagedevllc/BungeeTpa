@@ -2,6 +2,7 @@ package net.savagedev.tpa.sponge.hook.economy;
 
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.sponge.BungeeTpSpongePlugin;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.economy.EconomyService;
@@ -27,7 +28,7 @@ public class SpongeEconomyHook extends AbstractEconomyHook {
     }
 
     @Override
-    public double withdraw(BungeeTpPlayer player, double amount) {
+    public EconomyResponse withdraw(BungeeTpPlayer player, double amount) {
         final Optional<UniqueAccount> optionalAccount = this.economyService.findOrCreateAccount(player.getUniqueId());
         return optionalAccount.map(account ->
                 account.withdraw(this.economyService.defaultCurrency(), BigDecimal.valueOf(amount)).amount().doubleValue()

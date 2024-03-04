@@ -28,17 +28,18 @@ public class TpCancelCommand implements BungeeTpCommand {
             return;
         }
 
-        player.deposit(Setting.TELEPORT_COST.asFloat()).whenComplete((response, err) -> {
-            if (err != null) {
-                return;
-            }
+        final TeleportRequest request = optionalRequest.get();
+        final ProxyPlayer<?, ?> receiver = request.getReceiver();
 
-            final ProxyPlayer<?, ?> receiver = optionalRequest.get().getReceiver();
-            if (receiver.isConnected()) {
-                Lang.REQUEST_CANCELLED_RECEIVER.send(receiver, new Placeholder("%player%", player.getName()));
-            }
-            Lang.REQUEST_CANCELLED_SENDER.send(player, new Placeholder("%player%", receiver.getName()));
-        });
+        if (receiver.isConnected()) {
+            Lang.REQUEST_CANCELLED_RECEIVER.send(receiver, new Placeholder("%player%", request.getSender().getName()));
+        }
+        Lang.REQUEST_CANCELLED_SENDER.send(request.getSender(), new Placeholder("%player%", receiver.getName()));
+
+        // To avoid a race condition, we cancel the teleport request before requesting a refund.
+        if (request.isPaid()) {
+            player.deposit(Setting.TELEPORT_COST.asFloat());
+        }
     }
 
     @Override

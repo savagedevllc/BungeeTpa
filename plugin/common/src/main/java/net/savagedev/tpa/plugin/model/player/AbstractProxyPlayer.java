@@ -1,9 +1,9 @@
 package net.savagedev.tpa.plugin.model.player;
 
-import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyDepositRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
+import net.savagedev.tpa.plugin.model.economy.RemoteEconomyResponse;
 import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.util.concurrent.CompletableFuture;
@@ -30,16 +30,16 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
     }
 
     @Override
-    public CompletableFuture<EconomyResponse> deposit(double amount) {
-        final CompletableFuture<EconomyResponse> future = new CompletableFuture<>();
+    public CompletableFuture<RemoteEconomyResponse> deposit(double amount) {
+        final CompletableFuture<RemoteEconomyResponse> future = new CompletableFuture<>();
         this.plugin.getPlatform().getMessenger().sendData(this.getCurrentServer(), new MessageEconomyDepositRequest(this.getUniqueId(), amount));
         this.plugin.getPlayerManager().addAwaitingResponse(this.getUniqueId(), future);
         return future;
     }
 
     @Override
-    public CompletableFuture<EconomyResponse> withdraw(double amount) {
-        final CompletableFuture<EconomyResponse> future = new CompletableFuture<>();
+    public CompletableFuture<RemoteEconomyResponse> withdraw(double amount) {
+        final CompletableFuture<RemoteEconomyResponse> future = new CompletableFuture<>();
         this.plugin.getPlatform().getMessenger().sendData(this.getCurrentServer(), new MessageEconomyWithdrawRequest(this.getUniqueId(), amount));
         this.plugin.getPlayerManager().addAwaitingResponse(this.getUniqueId(), future);
         return future;

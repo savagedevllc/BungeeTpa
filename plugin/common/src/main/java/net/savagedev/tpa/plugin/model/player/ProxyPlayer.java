@@ -1,6 +1,6 @@
 package net.savagedev.tpa.plugin.model.player;
 
-import net.savagedev.tpa.common.hook.economy.EconomyResponse;
+import net.savagedev.tpa.plugin.model.economy.RemoteEconomyResponse;
 import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.util.UUID;
@@ -13,9 +13,9 @@ public interface ProxyPlayer<T, M> {
 
     void sendMessage(M message);
 
-    CompletableFuture<EconomyResponse> deposit(double amount);
+    CompletableFuture<RemoteEconomyResponse> deposit(double amount);
 
-    CompletableFuture<EconomyResponse> withdraw(double amount);
+    CompletableFuture<RemoteEconomyResponse> withdraw(double amount);
 
     boolean connect(Server<?> server);
 

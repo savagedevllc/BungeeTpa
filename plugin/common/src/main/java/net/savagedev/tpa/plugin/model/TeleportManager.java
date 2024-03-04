@@ -79,6 +79,10 @@ public final class TeleportManager {
         return this.requestMap.remove(player.getUniqueId());
     }
 
+    public TeleportRequest removeRequestBySenderOrReceiver(ProxyPlayer<?, ?> player) {
+        return this.removeRequestBySender(player).orElse(this.removeRequest(player));
+    }
+
     public Optional<TeleportRequest> removeRequestBySender(ProxyPlayer<?, ?> sender) {
         for (TeleportRequest request : this.getAllRequests()) {
             if (request.getSender().getUniqueId().equals(sender.getUniqueId())) {

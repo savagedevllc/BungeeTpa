@@ -50,8 +50,8 @@ public abstract class AbstractServer<T> implements Server<T> {
     }
 
     @Override
-    public boolean hasEconomySupport() {
-        return this.economySupport;
+    public boolean hasNoEconomy() {
+        return !this.economySupport;
     }
 
     @Override

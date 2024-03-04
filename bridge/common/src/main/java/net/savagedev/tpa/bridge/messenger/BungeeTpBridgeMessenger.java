@@ -11,8 +11,8 @@ import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyDepositRequest;
-import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
+import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
 
@@ -84,14 +84,21 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
             return;
         }
 
+        final AbstractEconomyHook economy = optionalEconomy.get();
+
         EconomyResponse response;
         if (request instanceof MessageEconomyDepositRequest) {
-            response = optionalEconomy.get().deposit(player, request.getAmount());
+            response = economy.deposit(player, request.getAmount());
         } else {
-            response = optionalEconomy.get().withdraw(player, request.getAmount());
+            response = economy.withdraw(player, request.getAmount());
         }
 
-        this.sendData(new MessageEconomyResponse(player.getUniqueId(), response.getAmount(), response.getBalance(), response.isSuccess()));
+        this.sendData(new MessageEconomyResponse(player.getUniqueId(),
+                response.getAmount(),
+                response.getBalance(),
+                economy.format(response.getAmount()),
+                economy.format(response.getBalance()),
+                response.isSuccess()));
     }
 
     private void handleBasicInfoRequest(MessageBasicServerInfoRequest ignored) {

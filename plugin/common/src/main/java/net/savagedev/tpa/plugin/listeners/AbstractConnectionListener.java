@@ -3,6 +3,7 @@ package net.savagedev.tpa.plugin.listeners;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoRequest;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.config.Lang;
+import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 import net.savagedev.tpa.plugin.model.server.Server;
@@ -45,9 +46,21 @@ public abstract class AbstractConnectionListener {
     }
 
     protected void handleDisconnectEvent(ProxyPlayer<?, ?> player) {
-        final TeleportRequest request = this.plugin.getTeleportManager().removeRequest(player);
+        final TeleportRequest request = this.plugin.getTeleportManager().removeRequestBySenderOrReceiver(player);
         if (request != null) {
-            Lang.PLAYER_OFFLINE.send(request.getSender(), new Lang.Placeholder("%player%", player.getName()));
+            final ProxyPlayer<?, ?> receiver = request.getReceiver();
+            if (receiver.isConnected()) {
+                Lang.PLAYER_OFFLINE.send(receiver, new Lang.Placeholder("%player%", player.getName()));
+            }
+
+            final ProxyPlayer<?, ?> sender = request.getSender();
+            if (sender.isConnected()) {
+                Lang.PLAYER_OFFLINE.send(sender, new Lang.Placeholder("%player%", player.getName()));
+            }
+
+            if (request.isPaid()) {
+                sender.deposit(Setting.TELEPORT_COST.asFloat());
+            }
         }
         this.plugin.getPlayerManager().remove(player.getUniqueId());
     }

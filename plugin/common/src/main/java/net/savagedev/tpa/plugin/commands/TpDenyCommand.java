@@ -12,18 +12,17 @@ public class TpDenyCommand extends AbstractRequestResponseCommand {
 
     @Override
     protected void respond(TeleportRequest request) {
-        request.getSender().deposit(Setting.TELEPORT_COST.asFloat()).whenComplete((response, err) -> {
-            if (err != null) {
-                return;
-            }
+        // Here we don't have to worry about a race condition because the request was already removed.
+        if (request.isPaid()) {
+            request.getSender().deposit(Setting.TELEPORT_COST.asFloat());
+        }
 
-            if (request.getDirection() == TeleportRequest.Direction.TO_RECEIVER) {
-                Lang.TPA_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
-                Lang.TPA_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
-            } else {
-                Lang.TPA_HERE_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
-                Lang.TPA_HERE_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
-            }
-        });
+        if (request.getDirection() == TeleportRequest.Direction.TO_RECEIVER) {
+            Lang.TPA_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
+            Lang.TPA_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
+        } else {
+            Lang.TPA_HERE_REQUEST_DENIED.send(request.getSender(), new Lang.Placeholder("%player%", request.getReceiver().getName()));
+            Lang.TPA_HERE_REQUEST_DENY.send(request.getReceiver(), new Lang.Placeholder("%player%", request.getSender().getName()));
+        }
     }
 }
