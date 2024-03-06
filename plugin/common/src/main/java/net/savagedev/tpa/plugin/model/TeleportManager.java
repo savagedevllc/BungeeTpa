@@ -10,13 +10,15 @@ import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public final class TeleportManager {
     private final Map<UUID, TeleportRequest> requestMap = new HashMap<>();
+    private final Map<UUID, UUID> mostRecentRequests = new HashMap<>();
 
     private final BungeeTpPlatform platform;
 
@@ -25,6 +27,13 @@ public final class TeleportManager {
     }
 
     public void shutdown() {
+        // Make sure all players are refunded in the event of a server shutdown.
+        for (TeleportRequest request : this.requestMap.values()) {
+            request.getSender().deposit(Setting.TELEPORT_COST.asFloat()).join();
+        }
+        this.platform.getLogger().info("Refunded " + this.requestMap.size() + " player(s).");
+
+        this.mostRecentRequests.clear();
         this.requestMap.clear();
     }
 
@@ -75,25 +84,41 @@ public final class TeleportManager {
         return success;
     }
 
-    public TeleportRequest removeRequest(ProxyPlayer<?, ?> player) {
-        return this.requestMap.remove(player.getUniqueId());
+    public TeleportRequest getRequestTo(ProxyPlayer<?, ?> player) {
+        return this.requestMap.get(player.getUniqueId());
     }
 
-    public TeleportRequest removeRequestBySenderOrReceiver(ProxyPlayer<?, ?> player) {
-        return this.removeRequestBySender(player).orElse(this.removeRequest(player));
+    public TeleportRequest removeRequestTo(ProxyPlayer<?, ?> player) {
+        final TeleportRequest request = this.requestMap.remove(player.getUniqueId());
+        this.mostRecentRequests.remove(request.getSender().getUniqueId());
+        return request;
     }
 
-    public Optional<TeleportRequest> removeRequestBySender(ProxyPlayer<?, ?> sender) {
+    public Set<TeleportRequest> removeAllRequestsBySenderOrReceiver(ProxyPlayer<?, ?> player) {
+        final Set<TeleportRequest> requests = new HashSet<>();
         for (TeleportRequest request : this.getAllRequests()) {
-            if (request.getSender().getUniqueId().equals(sender.getUniqueId())) {
-                return Optional.of(this.removeRequest(request.getReceiver()));
+            if (request.getSender().getUniqueId().equals(player.getUniqueId()) || request.getReceiver().getUniqueId().equals(player.getUniqueId())) {
+                this.mostRecentRequests.remove(request.getSender().getUniqueId());
+                this.requestMap.remove(request.getReceiver().getUniqueId());
+                requests.add(request);
             }
         }
-        return Optional.empty();
+        return requests;
     }
 
-    public boolean addRequest(ProxyPlayer<?, ?> player, TeleportRequest request) {
-        return this.requestMap.putIfAbsent(player.getUniqueId(), request) == null;
+    public TeleportRequest removeMostRecentRequest(ProxyPlayer<?, ?> sender) {
+        final UUID uuid = this.mostRecentRequests.remove(sender.getUniqueId());
+
+        if (uuid == null) {
+            return null;
+        }
+
+        return this.requestMap.remove(uuid);
+    }
+
+    public boolean addRequest(TeleportRequest request) {
+        this.mostRecentRequests.put(request.getSender().getUniqueId(), request.getReceiver().getUniqueId());
+        return this.requestMap.putIfAbsent(request.getReceiver().getUniqueId(), request) == null;
     }
 
     public Collection<TeleportRequest> getAllRequests() {

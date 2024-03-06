@@ -10,7 +10,7 @@ public class TpCommand extends AbstractTeleportCommand {
     }
 
     @Override
-    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean ignored) {
+    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean ignored, String formattedAmount) {
         Lang.TELEPORTING.send(player, new Lang.Placeholder("%player%", other.getName()));
         this.plugin.getTeleportManager().teleportAsync(player, other);
     }

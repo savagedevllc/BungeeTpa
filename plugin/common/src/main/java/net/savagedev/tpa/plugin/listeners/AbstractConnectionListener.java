@@ -46,8 +46,9 @@ public abstract class AbstractConnectionListener {
     }
 
     protected void handleDisconnectEvent(ProxyPlayer<?, ?> player) {
-        final TeleportRequest request = this.plugin.getTeleportManager().removeRequestBySenderOrReceiver(player);
-        if (request != null) {
+        final Set<TeleportRequest> requests = this.plugin.getTeleportManager().removeAllRequestsBySenderOrReceiver(player);
+
+        for (TeleportRequest request : requests) {
             final ProxyPlayer<?, ?> receiver = request.getReceiver();
             if (receiver.isConnected()) {
                 Lang.PLAYER_OFFLINE.send(receiver, new Lang.Placeholder("%player%", player.getName()));
@@ -62,6 +63,7 @@ public abstract class AbstractConnectionListener {
                 sender.deposit(Setting.TELEPORT_COST.asFloat());
             }
         }
+
         this.plugin.getPlayerManager().remove(player.getUniqueId());
     }
 }

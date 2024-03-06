@@ -6,6 +6,7 @@ import net.savagedev.tpa.plugin.config.Lang;
 import net.savagedev.tpa.plugin.config.Lang.Placeholder;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
+import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -44,10 +45,16 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
             return;
         }
 
-        final float teleportCost = Setting.TELEPORT_COST.asFloat();
+        final TeleportRequest request = this.plugin.getTeleportManager().getRequestTo(target.get());
 
+        if (request != null && request.getSender().getUniqueId().equals(player.getUniqueId())) {
+            Lang.REQUEST_ALREADY_SENT.send(player, new Placeholder("%player%", target.get().getName()));
+            return;
+        }
+
+        final float teleportCost = Setting.TELEPORT_COST.asFloat();
         if (player.hasPermission("bungeetp.bypass.economy") || teleportCost == 0.0f || player.getCurrentServer().hasNoEconomy()) {
-            this.teleport(player, target.get(), false);
+            this.teleport(player, target.get(), false, "0");
             return;
         }
 
@@ -57,7 +64,7 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
             }
 
             if (response.isSuccess()) {
-                this.teleport(player, target.get(), true);
+                this.teleport(player, target.get(), true, response.getFormattedAmount());
                 return;
             }
 
@@ -68,7 +75,7 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
         });
     }
 
-    protected abstract void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean paid);
+    protected abstract void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean paid, String formattedAmount);
 
     @Override
     public Collection<String> complete(ProxyPlayer<?, ?> player, String[] args) {
