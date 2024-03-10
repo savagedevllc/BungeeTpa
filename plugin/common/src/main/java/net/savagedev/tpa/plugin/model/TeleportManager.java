@@ -6,19 +6,22 @@ import net.savagedev.tpa.plugin.BungeeTpPlatform;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
+import net.savagedev.tpa.plugin.model.request.TeleportRequest.Direction;
 import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public final class TeleportManager {
-    private final Map<UUID, TeleportRequest> requestMap = new HashMap<>();
-    private final Map<UUID, UUID> mostRecentRequests = new HashMap<>();
+    private final Map<UUID, Stack<TeleportRequest>> requestMap = new HashMap<>();
 
     private final BungeeTpPlatform platform;
 
@@ -28,12 +31,12 @@ public final class TeleportManager {
 
     public void shutdown() {
         // Make sure all players are refunded in the event of a server shutdown.
-        for (TeleportRequest request : this.requestMap.values()) {
-            request.getSender().deposit(Setting.TELEPORT_COST.asFloat()).join();
+        for (Stack<TeleportRequest> requestStack : this.requestMap.values()) {
+            for (TeleportRequest request : requestStack) {
+                request.getSender().deposit(Setting.TELEPORT_COST.asFloat()).join();
+            }
         }
         this.platform.getLogger().info("Refunded " + this.requestMap.size() + " player(s).");
-
-        this.mostRecentRequests.clear();
         this.requestMap.clear();
     }
 
@@ -41,7 +44,7 @@ public final class TeleportManager {
         if (request == null) {
             return CompletableFuture.completedFuture(TeleportRequestResponse.SUCCESS);
         }
-        if (request.getDirection() == TeleportRequest.Direction.TO_SENDER) {
+        if (request.getDirection() == Direction.TO_SENDER) {
             if (request.getReceiver().canBypassDelay()) {
                 return this.teleportAsync(request.getReceiver(), request.getSender());
             } else {
@@ -84,45 +87,65 @@ public final class TeleportManager {
         return success;
     }
 
-    public TeleportRequest getRequestTo(ProxyPlayer<?, ?> player) {
-        return this.requestMap.get(player.getUniqueId());
+    public TeleportRequestResponse pushRequest(TeleportRequest request) {
+        this.requestMap.computeIfAbsent(request.getReceiver().getUniqueId(), k -> new Stack<>())
+                .push(request);
+        return TeleportRequestResponse.SUCCESS;
     }
 
-    public TeleportRequest removeRequestTo(ProxyPlayer<?, ?> player) {
-        final TeleportRequest request = this.requestMap.remove(player.getUniqueId());
-        this.mostRecentRequests.remove(request.getSender().getUniqueId());
-        return request;
+    public Optional<TeleportRequest> popMostRecentRequest(ProxyPlayer<?, ?> player) {
+        final Stack<TeleportRequest> requests = this.requestMap.get(player.getUniqueId());
+        if (requests == null || requests.empty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(requests.pop());
     }
 
-    public Set<TeleportRequest> removeAllRequestsBySenderOrReceiver(ProxyPlayer<?, ?> player) {
-        final Set<TeleportRequest> requests = new HashSet<>();
-        for (TeleportRequest request : this.getAllRequests()) {
-            if (request.getSender().getUniqueId().equals(player.getUniqueId()) || request.getReceiver().getUniqueId().equals(player.getUniqueId())) {
-                this.mostRecentRequests.remove(request.getSender().getUniqueId());
-                this.requestMap.remove(request.getReceiver().getUniqueId());
-                requests.add(request);
+    public Optional<TeleportRequest> popRequestBySender(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> sender) {
+        final Stack<TeleportRequest> requests = this.requestMap.get(player.getUniqueId());
+        if (requests == null || requests.empty()) {
+            return Optional.empty();
+        }
+
+        TeleportRequest request = null;
+        for (TeleportRequest teleportRequest : requests) {
+            if (teleportRequest.getSender().equals(sender)) {
+                request = teleportRequest;
+                break;
             }
         }
-        return requests;
-    }
 
-    public TeleportRequest removeMostRecentRequest(ProxyPlayer<?, ?> sender) {
-        final UUID uuid = this.mostRecentRequests.remove(sender.getUniqueId());
-
-        if (uuid == null) {
-            return null;
+        if (request != null) {
+            requests.remove(request);
         }
 
-        return this.requestMap.remove(uuid);
+        return Optional.ofNullable(request);
     }
 
-    public boolean addRequest(TeleportRequest request) {
-        this.mostRecentRequests.put(request.getSender().getUniqueId(), request.getReceiver().getUniqueId());
-        return this.requestMap.putIfAbsent(request.getReceiver().getUniqueId(), request) == null;
+    public Stack<TeleportRequest> getRequestStack(ProxyPlayer<?, ?> player) {
+        return this.requestMap.getOrDefault(player.getUniqueId(), new Stack<>());
     }
 
-    public Collection<TeleportRequest> getAllRequests() {
-        return this.requestMap.values();
+    public Collection<TeleportRequest> deleteRequestStack(ProxyPlayer<?, ?> player) {
+        final Stack<TeleportRequest> requestStack = this.requestMap.remove(player.getUniqueId());
+        return requestStack == null ? Collections.emptySet() : requestStack;
+    }
+
+    // For a future "denyall" command.
+    public void clearRequestStack(ProxyPlayer<?, ?> player) {
+        final Stack<TeleportRequest> requestStack = this.requestMap.get(player.getUniqueId());
+        if (requestStack == null) {
+            return;
+        }
+        requestStack.clear();
+    }
+
+    public Collection<TeleportRequest> aggregateRequests() {
+        final Set<TeleportRequest> aggregatedRequests = new HashSet<>();
+        for (Stack<TeleportRequest> requestStack : this.requestMap.values()) {
+            aggregatedRequests.addAll(requestStack);
+        }
+        return aggregatedRequests;
     }
 
     public enum TeleportRequestResponse {

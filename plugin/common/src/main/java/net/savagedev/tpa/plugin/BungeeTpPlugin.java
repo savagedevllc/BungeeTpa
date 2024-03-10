@@ -5,13 +5,13 @@ import net.savagedev.tpa.plugin.commands.TpCancelCommand;
 import net.savagedev.tpa.plugin.commands.TpCommand;
 import net.savagedev.tpa.plugin.commands.TpDenyCommand;
 import net.savagedev.tpa.plugin.commands.TpHereCommand;
-import net.savagedev.tpa.plugin.commands.TpToggleCommand;
 import net.savagedev.tpa.plugin.commands.TpaCommand;
 import net.savagedev.tpa.plugin.commands.TpaHereCommand;
 import net.savagedev.tpa.plugin.commands.admin.BungeeTpAdminCommand;
 import net.savagedev.tpa.plugin.config.Lang;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.config.updates.ConfigUpdater_v1;
+import net.savagedev.tpa.plugin.config.updates.ConfigUpdater_v2;
 import net.savagedev.tpa.plugin.model.TeleportManager;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.player.manager.PlayerManager;
@@ -102,6 +102,7 @@ public class BungeeTpPlugin {
     private void applyConfigUpdates() {
         // TODO: A better way to do this.
         new ConfigUpdater_v1();
+        new ConfigUpdater_v2();
     }
 
     private void initCommands() {
@@ -113,7 +114,8 @@ public class BungeeTpPlugin {
         this.platform.registerCommand(new TpCommand(this), "tp", "bungeetp.tp");
         this.platform.registerCommand(new TpDenyCommand(this), "tpdeny", "bungeetp.deny");
         this.platform.registerCommand(new TpHereCommand(this), "tphere", "bungeetp.tphere", "s");
-        this.platform.registerCommand(new TpToggleCommand(), "tptoggle", "bungeetp.toggle");
+        // Putting this off until I have the time to write a more robust storage solution.
+        // this.platform.registerCommand(new TpToggleCommand(), "tptoggle", "bungeetp.toggle");
     }
 
     public ServerManager getServerManager() {

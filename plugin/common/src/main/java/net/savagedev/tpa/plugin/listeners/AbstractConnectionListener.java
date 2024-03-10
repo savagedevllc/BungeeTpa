@@ -8,9 +8,11 @@ import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 import net.savagedev.tpa.plugin.model.server.Server;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public abstract class AbstractConnectionListener {
     protected final BungeeTpPlugin plugin;
@@ -46,9 +48,18 @@ public abstract class AbstractConnectionListener {
     }
 
     protected void handleDisconnectEvent(ProxyPlayer<?, ?> player) {
-        final Set<TeleportRequest> requests = this.plugin.getTeleportManager().removeAllRequestsBySenderOrReceiver(player);
+        final Collection<TeleportRequest> deletedRequests = this.plugin.getTeleportManager().deleteRequestStack(player);
 
-        for (TeleportRequest request : requests) {
+        final Set<TeleportRequest> pendingRemoval = this.plugin.getTeleportManager().aggregateRequests()
+                .stream()
+                .filter(request -> request.getSender().equals(player))
+                .collect(Collectors.toSet());
+
+        pendingRemoval.addAll(deletedRequests);
+
+        for (TeleportRequest request : pendingRemoval) {
+            this.plugin.getTeleportManager().popRequestBySender(request.getReceiver(), request.getSender());
+
             final ProxyPlayer<?, ?> receiver = request.getReceiver();
             if (receiver.isConnected()) {
                 Lang.PLAYER_OFFLINE.send(receiver, new Lang.Placeholder("%player%", player.getName()));

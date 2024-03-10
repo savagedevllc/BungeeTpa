@@ -45,10 +45,25 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
             return;
         }
 
-        final TeleportRequest request = this.plugin.getTeleportManager().getRequestTo(target.get());
 
-        if (request != null && request.getSender().getUniqueId().equals(player.getUniqueId())) {
+        final Optional<TeleportRequest> receiverRequest = this.plugin.getTeleportManager().getRequestStack(target.get())
+                .stream()
+                .filter(request -> request.getSender().equals(player))
+                .findAny();
+
+        if (receiverRequest.isPresent()) {
             Lang.REQUEST_ALREADY_SENT.send(player, new Placeholder("%player%", target.get().getName()));
+            return;
+        }
+
+
+        final Optional<TeleportRequest> senderRequest = this.plugin.getTeleportManager().getRequestStack(player)
+                .stream()
+                .filter(request -> request.getSender().equals(target.get()))
+                .findAny();
+
+        if (senderRequest.isPresent()) {
+            Lang.REQUEST_ALREADY_RECEIVED.send(player, new Placeholder("%player%", target.get().getName()));
             return;
         }
 

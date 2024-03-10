@@ -77,4 +77,9 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
     public T getHandle() {
         return this.handle;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ProxyPlayer && ((ProxyPlayer<?, ?>) obj).getUniqueId().equals(this.getUniqueId());
+    }
 }

@@ -1,8 +1,8 @@
 package net.savagedev.tpa.common.messaging;
 
-import com.google.gson.JsonElement;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.savagedev.tpa.common.messaging.messages.Message;
 
 import java.io.ByteArrayInputStream;
@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 public abstract class AbstractMessenger<T> implements Messenger<T> {
+    private static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
     private final Map<String, Function<JsonObject, Message>> decoderFunctions;
 
     public AbstractMessenger(Map<String, Function<JsonObject, Message>> decoderFunctions) {
@@ -26,12 +28,7 @@ public abstract class AbstractMessenger<T> implements Messenger<T> {
 
         try (final ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
              final DataInputStream dataStream = new DataInputStream(byteStream)) {
-            final JsonElement element = JsonParser.parseString(dataStream.readUTF());
-            if (element.isJsonNull() || !element.isJsonObject()) {
-                return;
-            }
-
-            final JsonObject object = element.getAsJsonObject();
+            final JsonObject object = gson.fromJson(dataStream.readUTF(), JsonObject.class);
             if (object.isJsonNull()) {
                 return;
             }

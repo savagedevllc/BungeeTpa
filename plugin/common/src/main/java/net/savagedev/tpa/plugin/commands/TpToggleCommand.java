@@ -9,7 +9,7 @@ import java.util.Collections;
 public class TpToggleCommand implements BungeeTpCommand {
     @Override
     public void execute(ProxyPlayer<?, ?> player, String[] args) {
-        throw new UnsupportedOperationException("Command not yet supported.");
+        throw new UnsupportedOperationException("Command not implemented supported.");
     }
 
     @Override
