@@ -3,6 +3,7 @@ package net.savagedev.tpa.plugin;
 import net.savagedev.tpa.plugin.commands.TpAcceptCommand;
 import net.savagedev.tpa.plugin.commands.TpCancelCommand;
 import net.savagedev.tpa.plugin.commands.TpCommand;
+import net.savagedev.tpa.plugin.commands.TpDenyAllCommand;
 import net.savagedev.tpa.plugin.commands.TpDenyCommand;
 import net.savagedev.tpa.plugin.commands.TpHereCommand;
 import net.savagedev.tpa.plugin.commands.TpaCommand;
@@ -112,6 +113,7 @@ public class BungeeTpPlugin {
         this.platform.registerCommand(new TpaHereCommand(this), "tpahere", "bungeetp.tpahere");
         this.platform.registerCommand(new TpCancelCommand(this), "tpcancel", "bungeetp.cancel");
         this.platform.registerCommand(new TpCommand(this), "tp", "bungeetp.tp");
+        this.platform.registerCommand(new TpDenyAllCommand(this), "tpdenyall", "bungeetp.deny.all");
         this.platform.registerCommand(new TpDenyCommand(this), "tpdeny", "bungeetp.deny");
         this.platform.registerCommand(new TpHereCommand(this), "tphere", "bungeetp.tphere", "s");
         // Putting this off until I have the time to write a more robust storage solution.
