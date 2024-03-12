@@ -29,6 +29,6 @@ public class BungeeConnectionListener extends AbstractConnectionListener impleme
     @EventHandler
     public void on(PlayerDisconnectEvent event) {
         super.handleDisconnectEvent(super.plugin.getPlayer(event.getPlayer().getUniqueId())
-                .orElseThrow(() -> new IllegalStateException("Player not loaded."))); // This shouldn't ever happen. And if it does, I want to know about it.
+                .orElseThrow(() -> new IllegalStateException("Player not loaded.")));
     }
 }
