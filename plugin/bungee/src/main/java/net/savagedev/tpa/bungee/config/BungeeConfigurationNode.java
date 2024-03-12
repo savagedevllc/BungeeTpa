@@ -76,7 +76,7 @@ public class BungeeConfigurationNode implements ConfigurationNode {
     public double getDouble() {
         final double value = this.configuration.getDouble(this.pathBuilder.toString());
         this.reset();
-        return 0;
+        return value;
     }
 
     @Override
