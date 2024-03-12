@@ -22,11 +22,9 @@ public abstract class AbstractRequestResponseCommand implements BungeeTpCommand 
 
     @Override
     public void execute(ProxyPlayer<?, ?> player, String[] args) {
-        final Optional<TeleportRequest> optionalRequest;
-        if (args.length == 0) {
-            // It's safe to remove the request at this point, since we know for a fact we're acting on the request in on way or another.
-            optionalRequest = this.plugin.getTeleportManager().popMostRecentRequest(player);
-        } else {
+        // It's safe to remove the request at this point, since we know for a fact we're acting on the request in on way or another.
+        Optional<TeleportRequest> optionalRequest = this.plugin.getTeleportManager().popMostRecentRequest(player);
+        if (args.length > 0) {
             final Optional<ProxyPlayer<?, ?>> sender = this.plugin.getPlayer(args[0]);
 
             if (!sender.isPresent()) {

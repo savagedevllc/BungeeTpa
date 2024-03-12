@@ -1,5 +1,7 @@
 package net.savagedev.tpa.plugin.model.request;
 
+import net.savagedev.tpa.plugin.config.Lang;
+import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
 public class TeleportRequest {
@@ -17,6 +19,21 @@ public class TeleportRequest {
         this.receiver = receiver;
         this.direction = direction;
         this.paid = paid;
+    }
+
+    public void deny() {
+        // Here we don't have to worry about a race condition because the request was already removed.
+        if (this.isPaid()) {
+            this.getSender().deposit(Setting.TELEPORT_COST.asFloat());
+        }
+
+        if (this.getDirection() == TeleportRequest.Direction.TO_RECEIVER) {
+            Lang.TPA_REQUEST_DENIED.send(this.getSender(), new Lang.Placeholder("%player%", this.getReceiver().getName()));
+            Lang.TPA_REQUEST_DENY.send(this.getReceiver(), new Lang.Placeholder("%player%", this.getSender().getName()));
+        } else {
+            Lang.TPA_HERE_REQUEST_DENIED.send(this.getSender(), new Lang.Placeholder("%player%", this.getReceiver().getName()));
+            Lang.TPA_HERE_REQUEST_DENY.send(this.getReceiver(), new Lang.Placeholder("%player%", this.getSender().getName()));
+        }
     }
 
     public ProxyPlayer<?, ?> getSender() {

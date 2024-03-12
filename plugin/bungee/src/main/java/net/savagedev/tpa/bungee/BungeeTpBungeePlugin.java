@@ -1,5 +1,6 @@
 package net.savagedev.tpa.bungee;
 
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -33,13 +34,12 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
             new BungeeServerLoaderFunction());
     private final Messenger<Server<?>> messenger = new BungeePluginMessenger(this);
 
-    private PluginManager pluginManager;
+    private final PluginManager pluginManager = this.getProxy().getPluginManager();
 
     @Override
     public void onEnable() {
-        this.pluginManager = this.getProxy().getPluginManager();
-        this.plugin.enable();
         this.initListeners();
+        this.plugin.enable();
 
         new Metrics(this, B_STATS_ID);
     }

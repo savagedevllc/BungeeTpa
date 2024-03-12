@@ -60,7 +60,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
     private final class EconomyWithdrawResponseConsumer implements Consumer<MessageEconomyResponse> {
         @Override
         public void accept(MessageEconomyResponse economyResponse) {
-            final CompletableFuture<RemoteEconomyResponse> response = plugin.getPlayerManager().removeAwaitingResponse(economyResponse.getUniqueId());
+            final CompletableFuture<RemoteEconomyResponse> response = plugin.getPlayerManager().removePendingTransaction(economyResponse.getUniqueId());
 
             if (response == null) {
                 return; // IDK what the hell happened if this happens...

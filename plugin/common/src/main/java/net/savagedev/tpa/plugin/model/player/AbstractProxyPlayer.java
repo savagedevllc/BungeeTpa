@@ -33,7 +33,7 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
     public CompletableFuture<RemoteEconomyResponse> deposit(double amount) {
         final CompletableFuture<RemoteEconomyResponse> future = new CompletableFuture<>();
         this.plugin.getPlatform().getMessenger().sendData(this.getCurrentServer(), new MessageEconomyDepositRequest(this.getUniqueId(), amount));
-        this.plugin.getPlayerManager().addAwaitingResponse(this.getUniqueId(), future);
+        this.plugin.getPlayerManager().addPendingTransaction(this.getUniqueId(), future);
         return future;
     }
 
@@ -41,7 +41,7 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
     public CompletableFuture<RemoteEconomyResponse> withdraw(double amount) {
         final CompletableFuture<RemoteEconomyResponse> future = new CompletableFuture<>();
         this.plugin.getPlatform().getMessenger().sendData(this.getCurrentServer(), new MessageEconomyWithdrawRequest(this.getUniqueId(), amount));
-        this.plugin.getPlayerManager().addAwaitingResponse(this.getUniqueId(), future);
+        this.plugin.getPlayerManager().addPendingTransaction(this.getUniqueId(), future);
         return future;
     }
 

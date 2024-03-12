@@ -21,10 +21,17 @@ public class TpCancelCommand implements BungeeTpCommand {
 
     @Override
     public void execute(ProxyPlayer<?, ?> player, String[] args) {
-        // TODO: Fix this, I need to implements some kind of sent request stack for the senders to keep track of the order in which requests are sent out.
-        //       popMostRecentRequest only works on most recent RECEIVED requests, not sent, and without doing a lot of heavy math, there's really no way (That I can think of)
-        //       to find the player's most recent sent request.
-        final Optional<TeleportRequest> optionalRequest = this.plugin.getTeleportManager().popMostRecentRequest(player);
+        Optional<TeleportRequest> optionalRequest = this.plugin.getTeleportManager().popMostRecentSentRequest(player);
+        if (args.length > 0) {
+            final Optional<ProxyPlayer<?, ?>> optionalReceiver = this.plugin.getPlayer(args[0]);
+
+            if (!optionalReceiver.isPresent()) {
+                Lang.UNKNOWN_PLAYER.send(player, new Placeholder("%player%", args[0]));
+                return;
+            }
+
+            optionalRequest = this.plugin.getTeleportManager().popRequestBySender(optionalReceiver.get(), player);
+        }
 
         if (!optionalRequest.isPresent()) {
             Lang.NO_REQUESTS.send(player);

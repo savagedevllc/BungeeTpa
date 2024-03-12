@@ -55,6 +55,16 @@ public class BungeeTpPlugin {
     }
 
     public void disable() {
+//        final Collection<CompletableFuture<RemoteEconomyResponse>> pendingTransactions = this.playerManager.getAllPendingTransactions();
+//        if (!pendingTransactions.isEmpty()) {
+//            this.getLogger().info("Waiting to complete " + pendingTransactions.size() + " transactions...");
+//
+//            for (CompletableFuture<RemoteEconomyResponse> transaction : pendingTransactions) {
+//                transaction.join();
+//            }
+//
+//            this.getLogger().info("Transactions completed.");
+//        }
         this.teleportManager.shutdown();
         this.platform.getMessenger().shutdown();
     }

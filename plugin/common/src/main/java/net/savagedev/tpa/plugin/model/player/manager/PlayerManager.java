@@ -4,6 +4,7 @@ import net.savagedev.tpa.plugin.model.AbstractManager;
 import net.savagedev.tpa.plugin.model.economy.RemoteEconomyResponse;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class PlayerManager extends AbstractManager<UUID, ProxyPlayer<?, ?>> {
-    private final Map<UUID, CompletableFuture<RemoteEconomyResponse>> awaitingResponse = new HashMap<>();
+    private final Map<UUID, CompletableFuture<RemoteEconomyResponse>> pendingTransactions = new HashMap<>();
 
     public PlayerManager(Function<UUID, ProxyPlayer<?, ?>> loader) {
         super(loader);
@@ -25,12 +26,16 @@ public class PlayerManager extends AbstractManager<UUID, ProxyPlayer<?, ?>> {
                 .findFirst();
     }
 
-    public void addAwaitingResponse(UUID uuid, CompletableFuture<RemoteEconomyResponse> future) {
-        this.awaitingResponse.put(uuid, future);
+    public void addPendingTransaction(UUID uuid, CompletableFuture<RemoteEconomyResponse> future) {
+        this.pendingTransactions.put(uuid, future);
     }
 
-    public CompletableFuture<RemoteEconomyResponse> removeAwaitingResponse(UUID uuid) {
-        return this.awaitingResponse.remove(uuid);
+    public CompletableFuture<RemoteEconomyResponse> removePendingTransaction(UUID uuid) {
+        return this.pendingTransactions.remove(uuid);
+    }
+
+    public Collection<CompletableFuture<RemoteEconomyResponse>> getAllPendingTransactions() {
+        return this.pendingTransactions.values();
     }
 
     @Override
