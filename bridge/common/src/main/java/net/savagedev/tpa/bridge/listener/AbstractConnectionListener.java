@@ -40,4 +40,9 @@ public class AbstractConnectionListener {
 
         this.platform.delay(() -> player.teleportTo(target), 250L);
     }
+
+    protected void handleQuitEvent(BungeeTpPlayer player) {
+        // TODO: Check if the player has a pending transaction.
+        this.platform.getEconomyProvider().ifPresent(economy -> economy.deposit(player, 0.0));
+    }
 }
