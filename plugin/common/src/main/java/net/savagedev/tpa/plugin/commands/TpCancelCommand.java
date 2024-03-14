@@ -21,8 +21,10 @@ public class TpCancelCommand implements BungeeTpCommand {
 
     @Override
     public void execute(ProxyPlayer<?, ?> player, String[] args) {
-        Optional<TeleportRequest> optionalRequest = this.plugin.getTeleportManager().popMostRecentSentRequest(player);
-        if (args.length > 0) {
+        final Optional<TeleportRequest> optionalRequest;
+        if (args.length == 0) {
+            optionalRequest = this.plugin.getTeleportManager().popMostRecentSentRequest(player);
+        } else {
             final Optional<ProxyPlayer<?, ?>> optionalReceiver = this.plugin.getPlayer(args[0]);
 
             if (!optionalReceiver.isPresent()) {
@@ -44,7 +46,11 @@ public class TpCancelCommand implements BungeeTpCommand {
         if (receiver.isConnected()) {
             Lang.REQUEST_CANCELLED_RECEIVER.send(receiver, new Placeholder("%player%", request.getSender().getName()));
         }
-        Lang.REQUEST_CANCELLED_SENDER.send(request.getSender(), new Placeholder("%player%", receiver.getName()));
+        player.getCurrentServer().formatCurrency(Setting.TELEPORT_COST.asFloat()).whenComplete((formattedAmount, ignored) ->
+                Lang.REQUEST_CANCELLED_SENDER.send(request.getSender(),
+                        new Placeholder("%player%", receiver.getName()),
+                        new Placeholder("%amount%", formattedAmount))
+        );
 
         // To avoid a race condition, we cancel the teleport request before requesting a refund.
         if (request.isPaid()) {

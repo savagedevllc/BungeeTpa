@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
+import net.savagedev.tpa.common.messaging.messages.MessageCurrencyFormatResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessagePlayerInfo;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
@@ -23,6 +24,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
         DECODER_FUNCTIONS.put(MessagePlayerInfo.class.getSimpleName(), MessagePlayerInfo::deserialize);
         DECODER_FUNCTIONS.put(MessageEconomyResponse.class.getSimpleName(), MessageEconomyResponse::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoResponse.class.getSimpleName(), MessageBasicServerInfoResponse::deserialize);
+        DECODER_FUNCTIONS.put(MessageCurrencyFormatResponse.class.getSimpleName(), MessageCurrencyFormatResponse::deserialize);
     }
 
     private final Map<String, Consumer<? extends Message>> consumers = new HashMap<>();
@@ -31,6 +33,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
         consumers.put(MessagePlayerInfo.class.getSimpleName(), new PlayerInfoConsumer());
         consumers.put(MessageEconomyResponse.class.getSimpleName(), new EconomyWithdrawResponseConsumer());
         consumers.put(MessageBasicServerInfoResponse.class.getSimpleName(), new ServerInfoConsumer());
+        consumers.put(MessageCurrencyFormatResponse.class.getSimpleName(), new CurrencyFormatConsumer());
     }
 
     private final BungeeTpPlugin plugin;
@@ -83,6 +86,19 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
                         server.setBridgeVersion(serverInfo.getBridgeVersion());
                         server.setEconomySupport(serverInfo.hasEconomySupport());
                     });
+        }
+    }
+
+    private final class CurrencyFormatConsumer implements Consumer<MessageCurrencyFormatResponse> {
+        @Override
+        public void accept(MessageCurrencyFormatResponse currencyFormatResponse) {
+            final CompletableFuture<String> future = plugin.getServerManager().removeAwaitingCurrencyFormat(currencyFormatResponse.getServerId());
+
+            if (future == null) {
+                return;
+            }
+
+            future.complete(currencyFormatResponse.getFormattedAmount());
         }
     }
 }

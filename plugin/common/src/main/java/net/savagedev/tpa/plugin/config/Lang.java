@@ -53,6 +53,10 @@ public enum Lang {
         s_RootNode = s_Loader.load();
     }
 
+    public static void saveAll() {
+        s_Loader.save(s_RootNode);
+    }
+
     private final String key;
 
     Lang(String key) {

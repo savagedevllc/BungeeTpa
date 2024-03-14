@@ -2,6 +2,8 @@ package net.savagedev.tpa.plugin.model.server;
 
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface Server<T> {
     void setSentBasicInfo(boolean sentBasicInfo);
 
@@ -16,6 +18,8 @@ public interface Server<T> {
     boolean hasNoEconomy();
 
     boolean hasSentBasicInfo();
+
+    CompletableFuture<String> formatCurrency(double amount);
 
     String getBridgeVersion();
 

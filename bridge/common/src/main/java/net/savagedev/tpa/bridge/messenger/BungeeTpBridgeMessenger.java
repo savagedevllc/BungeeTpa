@@ -10,6 +10,8 @@ import net.savagedev.tpa.common.messaging.messages.AbstractEconomyRequest;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
+import net.savagedev.tpa.common.messaging.messages.MessageCurrencyFormatRequest;
+import net.savagedev.tpa.common.messaging.messages.MessageCurrencyFormatResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyDepositRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
@@ -30,6 +32,7 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
         DECODER_FUNCTIONS.put(MessageEconomyWithdrawRequest.class.getSimpleName(), MessageEconomyWithdrawRequest::deserialize);
         DECODER_FUNCTIONS.put(MessageEconomyDepositRequest.class.getSimpleName(), MessageEconomyDepositRequest::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoRequest.class.getSimpleName(), MessageBasicServerInfoRequest::deserialize);
+        DECODER_FUNCTIONS.put(MessageCurrencyFormatRequest.class.getSimpleName(), MessageCurrencyFormatRequest::deserialize);
     }
 
     private final BungeeTpBridgePlatform platform;
@@ -56,6 +59,10 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
         if (message instanceof MessageBasicServerInfoRequest) {
             this.handleBasicInfoRequest((MessageBasicServerInfoRequest) message);
+        }
+
+        if (message instanceof MessageCurrencyFormatRequest) {
+            this.handleCurrencyFormatRequest((MessageCurrencyFormatRequest) message);
         }
     }
 
@@ -103,5 +110,13 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
     private void handleBasicInfoRequest(MessageBasicServerInfoRequest ignored) {
         this.sendData(new MessageBasicServerInfoResponse(this.platform.getSoftwareName(), this.platform.getVersion(), this.platform.getEconomyProvider().isPresent()));
+    }
+
+    private void handleCurrencyFormatRequest(MessageCurrencyFormatRequest request) {
+        if (this.platform.getEconomyProvider().isPresent()) {
+            this.sendData(new MessageCurrencyFormatResponse(request.getAmount(), this.platform.getEconomyProvider().get().format(request.getAmount())));
+        } else {
+            this.sendData(new MessageCurrencyFormatResponse(request.getAmount(), String.valueOf(request.getAmount())));
+        }
     }
 }

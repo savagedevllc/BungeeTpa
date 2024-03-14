@@ -39,7 +39,7 @@ public class BungeeConfigurationNode implements ConfigurationNode {
 
     @Override
     public boolean noChild(String name) {
-        final boolean contains = this.configuration.contains(this.pathBuilder + "." + name);
+        final boolean contains = this.configuration.contains(this.pathBuilder.length() > 0 ? this.pathBuilder + "." : name);
         this.reset();
         return !contains;
     }

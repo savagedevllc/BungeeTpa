@@ -69,7 +69,7 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
 
         final float teleportCost = Setting.TELEPORT_COST.asFloat();
         if (player.hasPermission("bungeetp.bypass.economy") || teleportCost == 0.0f || player.getCurrentServer().hasNoEconomy()) {
-            this.teleport(player, target.get(), false, "0");
+            this.teleport(player, target.get(), false, null);
             return;
         }
 
@@ -83,9 +83,10 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
                 return;
             }
 
-            Lang.PAYMENT_FAILED.send(player,
-                    new Placeholder("%amount%", String.valueOf(teleportCost)),
-                    new Placeholder("%balance%", response.getFormattedBalance())
+            player.getCurrentServer().formatCurrency(Setting.TELEPORT_COST.asFloat()).whenComplete((formattedAmount, ignored) ->
+                    Lang.PAYMENT_FAILED.send(player,
+                            new Placeholder("%amount%", formattedAmount),
+                            new Placeholder("%balance%", response.getFormattedBalance()))
             );
         });
     }

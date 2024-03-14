@@ -4,7 +4,6 @@ import net.savagedev.tpa.plugin.model.AbstractManager;
 import net.savagedev.tpa.plugin.model.economy.RemoteEconomyResponse;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,10 +31,6 @@ public class PlayerManager extends AbstractManager<UUID, ProxyPlayer<?, ?>> {
 
     public CompletableFuture<RemoteEconomyResponse> removePendingTransaction(UUID uuid) {
         return this.pendingTransactions.remove(uuid);
-    }
-
-    public Collection<CompletableFuture<RemoteEconomyResponse>> getAllPendingTransactions() {
-        return this.pendingTransactions.values();
     }
 
     @Override

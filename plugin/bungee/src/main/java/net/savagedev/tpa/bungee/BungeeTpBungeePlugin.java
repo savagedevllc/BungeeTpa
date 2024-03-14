@@ -1,6 +1,5 @@
 package net.savagedev.tpa.bungee;
 
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -31,7 +30,7 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
 
     private final BungeeTpPlugin plugin = new BungeeTpPlugin(this,
             new BungeePlayerLoaderFunction(this),
-            new BungeeServerLoaderFunction());
+            new BungeeServerLoaderFunction(this));
     private final Messenger<Server<?>> messenger = new BungeePluginMessenger(this);
 
     private final PluginManager pluginManager = this.getProxy().getPluginManager();
