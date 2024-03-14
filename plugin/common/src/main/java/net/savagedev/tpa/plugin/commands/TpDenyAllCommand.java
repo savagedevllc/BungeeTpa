@@ -21,7 +21,7 @@ public class TpDenyAllCommand implements BungeeTpCommand {
         final Deque<TeleportRequest> requestStack = this.plugin.getTeleportManager().getRequestStack(player);
 
         if (requestStack.isEmpty()) {
-            Lang.NO_REQUESTS.set(player);
+            Lang.NO_REQUESTS.send(player);
             return;
         }
 
