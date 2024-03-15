@@ -8,8 +8,6 @@ import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 public class TpCancelCommand implements BungeeTpCommand {
@@ -56,10 +54,5 @@ public class TpCancelCommand implements BungeeTpCommand {
         if (request.isPaid()) {
             player.deposit(Setting.TELEPORT_COST.asFloat());
         }
-    }
-
-    @Override
-    public Collection<String> complete(ProxyPlayer<?, ?> player, String[] args) {
-        return Collections.emptyList();
     }
 }

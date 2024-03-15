@@ -57,6 +57,8 @@ public abstract class AbstractRequestResponseCommand implements BungeeTpCommand 
         this.respond(request);
     }
 
+    protected abstract void respond(TeleportRequest request);
+
     @Override
     public Collection<String> complete(ProxyPlayer<?, ?> player, String[] args) {
         final Set<String> usernames = this.plugin.getTeleportManager().getRequestStack(player)
@@ -76,6 +78,4 @@ public abstract class AbstractRequestResponseCommand implements BungeeTpCommand 
         }
         return completions;
     }
-
-    protected abstract void respond(TeleportRequest request);
 }

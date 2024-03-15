@@ -7,6 +7,7 @@ import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 
 public class TpDenyAllCommand implements BungeeTpCommand {
@@ -34,6 +35,6 @@ public class TpDenyAllCommand implements BungeeTpCommand {
 
     @Override
     public Collection<String> complete(ProxyPlayer<?, ?> player, String[] args) {
-        return null;
+        return Collections.emptySet();
     }
 }

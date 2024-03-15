@@ -83,6 +83,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
             plugin.getServerManager().getOrLoad(serverInfo.getServerId())
                     .ifPresent(server -> {
                         server.setSentBasicInfo(true);
+                        server.setServerSoftware(serverInfo.getSoftwareName());
                         server.setBridgeVersion(serverInfo.getBridgeVersion());
                         server.setEconomySupport(serverInfo.hasEconomySupport());
                     });

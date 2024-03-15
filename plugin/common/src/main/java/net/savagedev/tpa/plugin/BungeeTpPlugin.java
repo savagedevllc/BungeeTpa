@@ -9,6 +9,8 @@ import net.savagedev.tpa.plugin.commands.TpHereCommand;
 import net.savagedev.tpa.plugin.commands.TpaCommand;
 import net.savagedev.tpa.plugin.commands.TpaHereCommand;
 import net.savagedev.tpa.plugin.commands.admin.BungeeTpAdminCommand;
+import net.savagedev.tpa.plugin.commands.admin.ReloadCommand;
+import net.savagedev.tpa.plugin.commands.admin.ServerInfoCommand;
 import net.savagedev.tpa.plugin.config.Lang;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.config.updates.ConfigUpdater_v1;
@@ -107,7 +109,11 @@ public class BungeeTpPlugin {
     }
 
     private void initCommands() {
-        this.platform.registerCommand(new BungeeTpAdminCommand(), "bungeetp", "bungeetp.admin");
+        final BungeeTpAdminCommand adminCommand = new BungeeTpAdminCommand();
+        adminCommand.addChild("reload", new ReloadCommand());
+        adminCommand.addChild("serverinfo", new ServerInfoCommand(this));
+
+        this.platform.registerCommand(adminCommand, "bungeetp", "bungeetp.admin");
         this.platform.registerCommand(new TpAcceptCommand(this), "tpaccept", "bungeetp.accept");
         this.platform.registerCommand(new TpaCommand(this), "tpa", "bungeetp.tpa");
         this.platform.registerCommand(new TpaHereCommand(this), "tpahere", "bungeetp.tpahere");

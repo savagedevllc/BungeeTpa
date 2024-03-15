@@ -16,6 +16,7 @@ public abstract class AbstractServer<T> implements Server<T> {
     private boolean sentBasicInfo;
     private boolean economySupport;
 
+    private String serverSoftware;
     private String bridgeVersion;
 
     public AbstractServer(String id, T handle, BungeeTpPlugin plugin) {
@@ -32,6 +33,11 @@ public abstract class AbstractServer<T> implements Server<T> {
     @Override
     public void setEconomySupport(boolean economySupport) {
         this.economySupport = economySupport;
+    }
+
+    @Override
+    public void setServerSoftware(String software) {
+        this.serverSoftware = software;
     }
 
     @Override
@@ -67,6 +73,11 @@ public abstract class AbstractServer<T> implements Server<T> {
         this.plugin.getPlatform().getMessenger().sendData(this, new MessageCurrencyFormatRequest(Setting.TELEPORT_COST.asFloat()));
         this.plugin.getServerManager().addAwaitingCurrencyFormat(this.getId(), future);
         return future;
+    }
+
+    @Override
+    public String getServerSoftware() {
+        return this.serverSoftware;
     }
 
     @Override
