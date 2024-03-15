@@ -7,7 +7,6 @@ import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.model.player.AbstractProxyPlayer;
 import net.savagedev.tpa.plugin.model.server.Server;
 import net.savagedev.tpa.velocity.BungeeTpVelocityPlugin;
-import net.savagedev.tpa.velocity.model.server.VelocityServer;
 
 import java.util.UUID;
 
@@ -41,15 +40,6 @@ public class VelocityPlayer extends AbstractProxyPlayer<Player, Component> {
     @Override
     public boolean isConnected() {
         return this.player.isActive();
-    }
-
-    @Override
-    public Server<?> getCurrentServer() {
-        return this.player.getCurrentServer()
-                .map(connection ->
-                        new VelocityServer(connection.getServerInfo().getName(), connection.getServer())
-                )
-                .orElse(null);
     }
 
     @Override

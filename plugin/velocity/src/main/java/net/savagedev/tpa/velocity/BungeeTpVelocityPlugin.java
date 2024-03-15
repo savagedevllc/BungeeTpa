@@ -53,7 +53,7 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
         this.logger = logger;
         this.dataPath = dataPath;
         this.metricsFactory = metricsFactory;
-        this.plugin = new BungeeTpPlugin(this, new VelocityPlayerLoaderFunction(this), new VelocityServerLoaderFunction(this.server));
+        this.plugin = new BungeeTpPlugin(this, new VelocityPlayerLoaderFunction(this), new VelocityServerLoaderFunction(this));
         this.messenger = new VelocityPluginMessenger(this);
     }
 
