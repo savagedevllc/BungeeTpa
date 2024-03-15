@@ -8,6 +8,8 @@ This plugin brings a new dimension to teleportation, providing seamless and effi
 
 **Player-Friendly Commands:** With intuitive and easy-to-use teleport commands, players can quickly teleport to each other between servers.
 
+**Vanish Support:** Supports most vanish plugins.
+
 **Permission System:** Admins have full control over who can access specific teleportation commands. Set up a robust permission system to manage teleportation privileges and maintain server security.
 
 **Configuration Options:** Fine-tune the plugin to suit your server's unique needs. Customize teleport request expiration times, teleportation delays (to bypass delays: bungeetp.cooldown.bypass), and other parameters (coming soon) to create a teleportation system tailored to your server's gameplay style.
