@@ -2,6 +2,7 @@ package net.savagedev.tpa.sponge.model;
 
 import net.kyori.adventure.text.Component;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Location;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.server.ServerPlayer;
@@ -23,6 +24,11 @@ public class SpongePlayer implements BungeeTpPlayer {
     }
 
     @Override
+    public void teleportTo(Location location) {
+        this.player.setLocation(ServerLocation.of(Sponge.server().worldManager().world(), targetOptional.get().position()));
+    }
+
+    @Override
     public void teleportTo(BungeeTpPlayer target) {
         final Optional<ServerPlayer> targetOptional = Sponge.server().player(target.getUniqueId());
 
@@ -41,6 +47,11 @@ public class SpongePlayer implements BungeeTpPlayer {
     @Override
     public UUID getUniqueId() {
         return this.player.uniqueId();
+    }
+
+    @Override
+    public Location getLocation() {
+        return null;
     }
 
     public ServerPlayer getHandle() {

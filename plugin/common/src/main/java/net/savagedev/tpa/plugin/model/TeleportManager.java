@@ -1,7 +1,8 @@
 package net.savagedev.tpa.plugin.model;
 
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.TeleportTime;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.TeleportType;
 import net.savagedev.tpa.plugin.BungeeTpPlatform;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
@@ -78,11 +79,11 @@ public final class TeleportManager {
         TeleportRequestResponse success = TeleportRequestResponse.SUCCESS;
         final Server<?> targetServer = other.getCurrentServer();
 
-        final MessageRequestTeleport requestMessage = new MessageRequestTeleport(player.getUniqueId(), other.getUniqueId());
+        final MessageRequestTeleport requestMessage = new MessageRequestTeleport(player.getUniqueId(), TeleportType.PLAYER_LOCATION, other.getUniqueId());
         if (player.getCurrentServer().equals(targetServer)) {
-            requestMessage.setType(Type.INSTANT);
+            requestMessage.setTeleportTime(TeleportTime.INSTANT);
         } else {
-            requestMessage.setType(Type.ON_JOIN);
+            requestMessage.setTeleportTime(TeleportTime.ON_JOIN);
             success = player.connect(targetServer) ? TeleportRequestResponse.SUCCESS : TeleportRequestResponse.NOT_WHITELISTED;
         }
 

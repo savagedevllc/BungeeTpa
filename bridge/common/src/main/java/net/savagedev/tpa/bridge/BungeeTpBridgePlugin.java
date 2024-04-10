@@ -1,5 +1,7 @@
 package net.savagedev.tpa.bridge;
 
+import net.savagedev.tpa.bridge.model.Location;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -7,7 +9,7 @@ import java.util.UUID;
 public class BungeeTpBridgePlugin {
     private final BungeeTpBridgePlatform platform;
 
-    private Map<UUID, UUID> tpCache;
+    private Map<UUID, Location> tpCache;
 
     public BungeeTpBridgePlugin(BungeeTpBridgePlatform platform) {
         this.platform = platform;
@@ -22,7 +24,7 @@ public class BungeeTpBridgePlugin {
         this.platform.getMessenger().shutdown();
     }
 
-    public Map<UUID, UUID> getTpCache() {
+    public Map<UUID, Location> getTpCache() {
         return this.tpCache;
     }
 }

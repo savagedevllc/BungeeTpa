@@ -5,6 +5,7 @@ import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Location;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.spigot.hook.economy.VaultEconomyHook;
 import net.savagedev.tpa.spigot.hook.vanish.EssentialsVanishHook;
@@ -95,6 +96,11 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
+    public String getDefaultWorld() {
+        return this.getServer().getWorlds().get(0).getName();
+    }
+
+    @Override
     public String getVersion() {
         return this.getDescription().getVersion();
     }
@@ -127,7 +133,7 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
-    public Map<UUID, UUID> getTpCache() {
+    public Map<UUID, Location> getTpCache() {
         return this.plugin.getTpCache();
     }
 

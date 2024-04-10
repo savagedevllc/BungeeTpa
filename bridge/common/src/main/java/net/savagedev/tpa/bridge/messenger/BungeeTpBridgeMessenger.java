@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Location;
 import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
 import net.savagedev.tpa.common.messaging.messages.AbstractEconomyRequest;
@@ -16,7 +17,8 @@ import net.savagedev.tpa.common.messaging.messages.MessageEconomyDepositRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.TeleportTime;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.TeleportType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,13 +70,26 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
     private void handleTeleportRequest(MessageRequestTeleport request) {
         final UUID requesterId = request.getRequester();
-        final BungeeTpPlayer receiver = this.platform.getBungeeTpPlayer(request.getReceiver());
 
-        if (request.getType() == Type.INSTANT) {
+        final Location location;
+        if (request.getTeleportType() == TeleportType.PLAYER_LOCATION) {
+            final BungeeTpPlayer receiver = this.platform.getBungeeTpPlayer(request.getReceiver()
+                    .orElseThrow(() -> new IllegalStateException("Malformed teleport request message.")));
+            if (receiver == null) {
+                // TODO: Send the sender a message somehow that the receiver is offline now.
+                return;
+            }
+            location = receiver.getLocation();
+        } else { // Only one other type... For now anyway...
+            location = new Location(request.getWorldName().orElse(this.platform.getDefaultWorld()),
+                    request.getX(), request.getY(), request.getZ());
+        }
+
+        if (request.getTeleportTime() == TeleportTime.INSTANT) {
             final BungeeTpPlayer requester = this.platform.getBungeeTpPlayer(requesterId);
-            requester.teleportTo(receiver);
+            requester.teleportTo(location);
         } else {
-            this.platform.getTpCache().put(requesterId, receiver.getUniqueId());
+            this.platform.getTpCache().put(requesterId, location);
         }
     }
 

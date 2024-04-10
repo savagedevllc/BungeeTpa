@@ -8,9 +8,11 @@ import java.util.UUID;
 public interface BungeeTpPlayer {
     void sendData(Message message) throws IOException;
 
-    void teleportTo(BungeeTpPlayer target);
+    void teleportTo(Location location);
 
     void sendMessage(String message);
 
     UUID getUniqueId();
+
+    Location getLocation();
 }

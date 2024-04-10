@@ -1,11 +1,12 @@
 package net.savagedev.tpa.spigot.model;
 
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Location;
 import net.savagedev.tpa.common.messaging.ChannelConstants;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.spigot.BungeeTpSpigotPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.ByteArrayOutputStream;
@@ -36,14 +37,13 @@ public class SpigotPlayer implements BungeeTpPlayer {
     }
 
     @Override
-    public void teleportTo(BungeeTpPlayer target) {
-        final Player targetPlayer = Bukkit.getPlayer(target.getUniqueId());
-
-        if (targetPlayer == null) {
-            throw new IllegalStateException("Cannot teleport to a null player");
+    public void teleportTo(Location location) {
+        World world = this.plugin.getServer().getWorld(location.getWorldName());
+        if (world == null) {
+            // The world at index 0 is the default world on this platform.
+            world = this.plugin.getServer().getWorlds().get(0);
         }
-
-        this.player.teleport(targetPlayer);
+        this.player.teleport(new org.bukkit.Location(world, location.getX(), location.getY(), location.getZ()));
     }
 
     @Override
@@ -54,6 +54,13 @@ public class SpigotPlayer implements BungeeTpPlayer {
     @Override
     public UUID getUniqueId() {
         return this.player.getUniqueId();
+    }
+
+    @Override
+    public Location getLocation() {
+        final org.bukkit.Location location = this.player.getLocation();
+        return new Location(this.player.getWorld().getName(), (float) location.getX(),
+                (float) location.getY(), (float) location.getZ());
     }
 
     public Player getHandle() {
