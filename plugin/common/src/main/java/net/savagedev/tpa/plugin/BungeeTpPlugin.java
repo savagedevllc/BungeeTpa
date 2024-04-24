@@ -50,7 +50,7 @@ public class BungeeTpPlugin {
 
     public void enable() {
         this.platform.getMessenger().init();
-        this.teleportManager = new TeleportManager(this.platform);
+        this.teleportManager = new TeleportManager(this);
         this.initConfigs();
         this.applyConfigUpdates();
         this.initCommands();

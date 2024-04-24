@@ -87,6 +87,9 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
         if (request.getTeleportTime() == TeleportTime.INSTANT) {
             final BungeeTpPlayer requester = this.platform.getBungeeTpPlayer(requesterId);
+            if (requester == null) {
+                throw new IllegalStateException("TeleportTime cannot be INSTANT if the target is offline!");
+            }
             requester.teleportTo(location);
         } else {
             this.platform.getTpCache().put(requesterId, location);

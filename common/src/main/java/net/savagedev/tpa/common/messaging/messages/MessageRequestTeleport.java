@@ -11,12 +11,24 @@ public class MessageRequestTeleport extends Message {
         final long requesterLeastSigBits = object.get("req_lsb").getAsLong();
         final UUID requester = new UUID(requesterMostSigBits, requesterLeastSigBits);
 
-        final long senderMostSigBits = object.get("rec_msb").getAsLong();
-        final long senderLeastSigBits = object.get("rec_lsb").getAsLong();
-        final UUID receiver = new UUID(senderMostSigBits, senderLeastSigBits);
+        final TeleportType type = TeleportType.values()[object.get("type").getAsInt()];
 
-        final MessageRequestTeleport requestMessage = new MessageRequestTeleport(requester, receiver);
-        requestMessage.setTeleportTime(TeleportTime.values()[object.get("t").getAsInt()]);
+        final MessageRequestTeleport requestMessage;
+        if (type == TeleportType.COORDINATES) {
+            final String worldName = object.get("world").getAsString();
+            final float x = object.get("x").getAsFloat();
+            final float y = object.get("y").getAsFloat();
+            final float z = object.get("z").getAsFloat();
+
+            requestMessage = new MessageRequestTeleport(requester, type, worldName, x, y, z);
+        } else {
+            final long receiverMostSigBits = object.get("rec_msb").getAsLong();
+            final long receiverLeastSigBits = object.get("rec_lsb").getAsLong();
+            final UUID receiver = new UUID(receiverMostSigBits, receiverLeastSigBits);
+
+            requestMessage = new MessageRequestTeleport(requester, type, receiver);
+        }
+        requestMessage.setTeleportTime(TeleportTime.values()[object.get("time").getAsInt()]);
         return requestMessage;
     }
 
@@ -89,6 +101,10 @@ public class MessageRequestTeleport extends Message {
         object.addProperty("rec_lsb", this.receiver.getLeastSignificantBits());
         object.addProperty("type", this.teleportType.ordinal());
         object.addProperty("time", this.teleportTime.ordinal());
+        object.addProperty("world", this.worldName);
+        object.addProperty("x", this.x);
+        object.addProperty("y", this.y);
+        object.addProperty("z", this.z);
         return object;
     }
 

@@ -3,7 +3,7 @@ package net.savagedev.tpa.plugin.model;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.TeleportTime;
 import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.TeleportType;
-import net.savagedev.tpa.plugin.BungeeTpPlatform;
+import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 public final class TeleportManager {
     private final Map<UUID, Deque<TeleportRequest>> requestMap = new HashMap<>();
 
-    private final BungeeTpPlatform platform;
+    private final BungeeTpPlugin plugin;
 
-    public TeleportManager(BungeeTpPlatform platform) {
-        this.platform = platform;
+    public TeleportManager(BungeeTpPlugin plugin) {
+        this.plugin = plugin;
     }
 
     // TODO: Find a way to call this on shutdown before the disconnect event, or cancel the disconnect event or something.
@@ -40,7 +40,7 @@ public final class TeleportManager {
             request.getSender().deposit(Setting.TELEPORT_COST.asFloat()).join();
             count++;
         }
-        this.platform.getLogger().info("Refunded " + count + " player(s).");
+        this.plugin.getPlatform().getLogger().info("Refunded " + count + " player(s).");
         this.requestMap.clear();
     }
 
@@ -65,7 +65,7 @@ public final class TeleportManager {
 
     private CompletableFuture<TeleportRequestResponse> teleportDelayedAsync(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
         final CompletableFuture<TeleportRequestResponse> future = new CompletableFuture<>();
-        this.platform.scheduleTaskDelayed(() ->
+        this.plugin.getPlatform().scheduleTaskDelayed(() ->
                         future.complete(this.teleport(player, other)),
                 Setting.DELAY.asLong() * 1000L);
         return future;
@@ -73,6 +73,10 @@ public final class TeleportManager {
 
     public CompletableFuture<TeleportRequestResponse> teleportAsync(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
         return CompletableFuture.supplyAsync(() -> this.teleport(player, other));
+    }
+
+    public CompletableFuture<TeleportRequestResponse> teleportAsync(ProxyPlayer<?, ?> player, String server, String world, float x, float y, float z) {
+        return CompletableFuture.supplyAsync(() -> this.teleport(player, server, world, x, y, z));
     }
 
     private TeleportRequestResponse teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other) {
@@ -87,7 +91,27 @@ public final class TeleportManager {
             success = player.connect(targetServer) ? TeleportRequestResponse.SUCCESS : TeleportRequestResponse.NOT_WHITELISTED;
         }
 
-        this.platform.getMessenger().sendData(other.getCurrentServer(), requestMessage);
+        this.plugin.getPlatform().getMessenger().sendData(targetServer, requestMessage);
+        return success;
+    }
+
+    private TeleportRequestResponse teleport(ProxyPlayer<?, ?> player, String server, String world, float x, float y, float z) {
+        TeleportRequestResponse success = TeleportRequestResponse.SUCCESS;
+        final Optional<Server<?>> optionalTargetServer = this.plugin.getServerManager().getOrLoad(server);
+
+        if (!optionalTargetServer.isPresent()) {
+            return TeleportRequestResponse.INVALID_SERVER;
+        }
+
+        final MessageRequestTeleport requestMessage = new MessageRequestTeleport(player.getUniqueId(), TeleportType.COORDINATES, world, x, y, z);
+        if (player.getCurrentServer().equals(optionalTargetServer.get())) {
+            requestMessage.setTeleportTime(TeleportTime.INSTANT);
+        } else {
+            requestMessage.setTeleportTime(TeleportTime.ON_JOIN);
+            success = player.connect(optionalTargetServer.get()) ? TeleportRequestResponse.SUCCESS : TeleportRequestResponse.NOT_WHITELISTED;
+        }
+
+        this.plugin.getPlatform().getMessenger().sendData(optionalTargetServer.get(), requestMessage);
         return success;
     }
 
@@ -178,7 +202,8 @@ public final class TeleportManager {
     public enum TeleportRequestResponse {
         SUCCESS,
         NOT_WHITELISTED,
-        CANT_AFFORD;
+        CANT_AFFORD,
+        INVALID_SERVER;
 
         public boolean isSuccess() {
             return this == SUCCESS;
