@@ -21,17 +21,16 @@ public final class FileUtils {
         }
     }
 
-    private static InputStream getResource(String name) {
+    private static InputStream getResource(String name) throws IOException {
         final URL url = FileUtils.class.getClassLoader().getResource(name);
-        if (url != null) {
-            try {
-                final URLConnection connection = url.openConnection();
-                connection.setUseCaches(false);
-                return connection.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+        if (url == null) {
+            return null;
         }
-        return null;
+
+        final URLConnection connection = url.openConnection();
+        connection.setUseCaches(false);
+
+        return connection.getInputStream();
     }
 }
