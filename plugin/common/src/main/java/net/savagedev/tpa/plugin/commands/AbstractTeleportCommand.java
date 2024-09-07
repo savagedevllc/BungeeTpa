@@ -9,7 +9,6 @@ import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -102,16 +101,6 @@ public abstract class AbstractTeleportCommand implements BungeeTpCommand {
 
         usernames.remove(player.getName());
 
-        if (args.length == 0) {
-            return usernames;
-        }
-
-        final Set<String> completions = new HashSet<>();
-        for (String username : usernames) {
-            if (username.toLowerCase().startsWith(args[0].toLowerCase())) {
-                completions.add(username);
-            }
-        }
-        return completions;
+        return filterCompletions(args, usernames);
     }
 }

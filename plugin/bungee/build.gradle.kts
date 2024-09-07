@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.md-5:bungeecord-api:1.20-R0.1-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT")
 
     implementation("org.bstats:bstats-bungeecord:3.0.2")
     implementation(project(":plugin:common"))
