@@ -14,14 +14,14 @@ public interface BungeeTpCommand {
         return Collections.emptySet();
     }
 
-    default Collection<String> filterCompletions(String[] args, Set<String> values) {
-        if (args.length == 0) {
+    default Collection<String> filterCompletions(int startIndex, String[] args, Collection<String> values) {
+        if (args.length < startIndex) {
             return values;
         }
 
         final Set<String> completions = new HashSet<>();
         for (String value : values) {
-            if (value.toLowerCase().startsWith(args[0].toLowerCase())) {
+            if (value.toLowerCase().startsWith(args[startIndex].toLowerCase())) {
                 completions.add(value);
             }
         }

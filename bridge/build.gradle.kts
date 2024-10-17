@@ -1,5 +1,5 @@
 group = "net.savagedev"
-version = "1.0.3"
+version = "1.0.4"
 
 subprojects {
     java {

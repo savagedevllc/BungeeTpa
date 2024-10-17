@@ -65,6 +65,6 @@ public abstract class AbstractRequestResponseCommand implements BungeeTpCommand 
                 .map(request -> request.getSender().getName())
                 .collect(Collectors.toSet());
 
-        return filterCompletions(args, usernames);
+        return filterCompletions(0, args, usernames);
     }
 }

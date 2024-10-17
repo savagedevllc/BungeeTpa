@@ -2,6 +2,7 @@ package net.savagedev.tpa.plugin.model.server;
 
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public interface Server<T> {
@@ -22,6 +23,8 @@ public interface Server<T> {
     boolean hasSentBasicInfo();
 
     CompletableFuture<String> formatCurrency(double amount);
+
+    Collection<String> getAllWorlds();
 
     String getServerSoftware();
 

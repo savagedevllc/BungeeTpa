@@ -15,7 +15,8 @@ public class VelocityServerLoaderFunction implements Function<String, Server<?>>
 
     @Override
     public Server<?> apply(String id) {
-        return new VelocityServer(id, this.platform.getServer().getServer(id)
-                .orElseThrow(() -> new IllegalStateException("Server not loaded.")), this.platform.getPlugin());
+        return this.platform.getServer().getServer(id)
+                .map(server -> new VelocityServer(id, server, this.platform.getPlugin()))
+                .orElse(null);
     }
 }

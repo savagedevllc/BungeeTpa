@@ -4,9 +4,11 @@ import com.google.gson.JsonObject;
 import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Location;
 import net.savagedev.tpa.common.hook.economy.EconomyResponse;
 import net.savagedev.tpa.common.messaging.AbstractMessenger;
 import net.savagedev.tpa.common.messaging.messages.AbstractEconomyRequest;
+import net.savagedev.tpa.common.messaging.messages.AbstractMessageRequestTeleport.Type;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoResponse;
@@ -15,8 +17,8 @@ import net.savagedev.tpa.common.messaging.messages.MessageCurrencyFormatResponse
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyDepositRequest;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyWithdrawRequest;
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleportCoords;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleportPlayer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +30,8 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
     private static final Map<String, Function<JsonObject, Message>> DECODER_FUNCTIONS = new HashMap<>();
 
     static {
-        DECODER_FUNCTIONS.put(MessageRequestTeleport.class.getSimpleName(), MessageRequestTeleport::deserialize);
+        DECODER_FUNCTIONS.put(MessageRequestTeleportPlayer.class.getSimpleName(), MessageRequestTeleportPlayer::deserialize);
+        DECODER_FUNCTIONS.put(MessageRequestTeleportCoords.class.getSimpleName(), MessageRequestTeleportCoords::deserialize);
         DECODER_FUNCTIONS.put(MessageEconomyWithdrawRequest.class.getSimpleName(), MessageEconomyWithdrawRequest::deserialize);
         DECODER_FUNCTIONS.put(MessageEconomyDepositRequest.class.getSimpleName(), MessageEconomyDepositRequest::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoRequest.class.getSimpleName(), MessageBasicServerInfoRequest::deserialize);
@@ -44,8 +47,13 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
     @Override
     public void handleIncomingMessage(Message message) {
-        if (message instanceof MessageRequestTeleport) {
-            this.handleTeleportRequest((MessageRequestTeleport) message);
+        if (message instanceof MessageRequestTeleportPlayer) {
+            this.handleTeleportRequest((MessageRequestTeleportPlayer) message);
+            return;
+        }
+
+        if (message instanceof MessageRequestTeleportCoords) {
+            this.handleTeleportRequest((MessageRequestTeleportCoords) message);
             return;
         }
 
@@ -66,7 +74,7 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
         }
     }
 
-    private void handleTeleportRequest(MessageRequestTeleport request) {
+    private void handleTeleportRequest(MessageRequestTeleportPlayer request) {
         final UUID requesterId = request.getRequester();
         final BungeeTpPlayer receiver = this.platform.getBungeeTpPlayer(request.getReceiver());
 
@@ -74,7 +82,19 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
             final BungeeTpPlayer requester = this.platform.getBungeeTpPlayer(requesterId);
             requester.teleportTo(receiver);
         } else {
-            this.platform.getTpCache().put(requesterId, receiver.getUniqueId());
+            this.platform.getTpCache().put(requesterId, receiver);
+        }
+    }
+
+    private void handleTeleportRequest(MessageRequestTeleportCoords request) {
+        final UUID requesterId = request.getRequester();
+        final Location location = Location.fromMessage(request);
+
+        if (request.getType() == Type.INSTANT) {
+            final BungeeTpPlayer requester = this.platform.getBungeeTpPlayer(requesterId);
+            requester.teleportTo(location);
+        } else {
+            this.platform.getTpCache().put(requesterId, location);
         }
     }
 
@@ -109,7 +129,8 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
     }
 
     private void handleBasicInfoRequest(MessageBasicServerInfoRequest ignored) {
-        this.sendData(new MessageBasicServerInfoResponse(this.platform.getSoftwareName(), this.platform.getVersion(), this.platform.getEconomyProvider().isPresent()));
+        this.sendData(new MessageBasicServerInfoResponse(this.platform.getSoftwareName(), this.platform.getVersion(),
+                this.platform.getEconomyProvider().isPresent(), this.platform.getAllWorlds()));
     }
 
     private void handleCurrencyFormatRequest(MessageCurrencyFormatRequest request) {

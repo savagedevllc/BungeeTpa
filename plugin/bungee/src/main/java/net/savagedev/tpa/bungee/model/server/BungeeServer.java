@@ -22,6 +22,6 @@ public class BungeeServer extends AbstractServer<ServerInfo> {
 
     @Override
     public void sendData(String channel, byte[] data) {
-        super.getHandle().sendData(channel, data);
+        super.getHandle().sendData(channel, data, true);
     }
 }

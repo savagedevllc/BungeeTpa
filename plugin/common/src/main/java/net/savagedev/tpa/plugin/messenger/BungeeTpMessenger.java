@@ -86,6 +86,7 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
                         server.setServerSoftware(serverInfo.getSoftwareName());
                         server.setBridgeVersion(serverInfo.getBridgeVersion());
                         server.setEconomySupport(serverInfo.hasEconomySupport());
+                        server.getAllWorlds().addAll(serverInfo.getWorlds());
                     });
         }
     }

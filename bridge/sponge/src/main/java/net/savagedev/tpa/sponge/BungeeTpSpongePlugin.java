@@ -6,6 +6,7 @@ import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Teleportable;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.sponge.hook.economy.SpongeEconomyHook;
 import net.savagedev.tpa.sponge.listener.ConnectionListener;
@@ -23,10 +24,12 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Plugin("bungeetpasponge")
 public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
@@ -95,7 +98,7 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
-    public Map<UUID, UUID> getTpCache() {
+    public Map<UUID, Teleportable> getTpCache() {
         return this.plugin.getTpCache();
     }
 
@@ -113,6 +116,14 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     @Override
     public Optional<AbstractEconomyHook> getEconomyProvider() {
         return Optional.of(new SpongeEconomyHook(this));
+    }
+
+    @Override
+    public Collection<String> getAllWorlds() {
+        return Sponge.server().worldManager().worlds()
+                .stream()
+                .map(world -> world.key().value())
+                .collect(Collectors.toSet());
     }
 
     @Override

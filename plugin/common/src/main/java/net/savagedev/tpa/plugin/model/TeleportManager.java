@@ -1,13 +1,15 @@
 package net.savagedev.tpa.plugin.model;
 
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport;
-import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleport.Type;
+import net.savagedev.tpa.common.messaging.messages.AbstractMessageRequestTeleport.Type;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleportCoords;
+import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleportPlayer;
 import net.savagedev.tpa.plugin.BungeeTpPlatform;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest;
 import net.savagedev.tpa.plugin.model.request.TeleportRequest.Direction;
 import net.savagedev.tpa.plugin.model.server.Server;
+import net.savagedev.tpa.plugin.model.server.ServerLocation;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -78,7 +80,7 @@ public final class TeleportManager {
         TeleportRequestResponse success = TeleportRequestResponse.SUCCESS;
         final Server<?> targetServer = other.getCurrentServer();
 
-        final MessageRequestTeleport requestMessage = new MessageRequestTeleport(player.getUniqueId(), other.getUniqueId());
+        final MessageRequestTeleportPlayer requestMessage = new MessageRequestTeleportPlayer(player.getUniqueId(), other.getUniqueId());
         if (player.getCurrentServer().equals(targetServer)) {
             requestMessage.setType(Type.INSTANT);
         } else {
@@ -86,7 +88,24 @@ public final class TeleportManager {
             success = player.connect(targetServer) ? TeleportRequestResponse.SUCCESS : TeleportRequestResponse.NOT_WHITELISTED;
         }
 
-        this.platform.getMessenger().sendData(other.getCurrentServer(), requestMessage);
+        this.platform.getMessenger().sendData(targetServer, requestMessage);
+        return success;
+    }
+
+    public TeleportRequestResponse teleport(ProxyPlayer<?, ?> player, ServerLocation location) {
+        TeleportRequestResponse success = TeleportRequestResponse.SUCCESS;
+        final Server<?> targetServer = location.getServer();
+
+        final MessageRequestTeleportCoords requestMessage = new MessageRequestTeleportCoords(player.getUniqueId(),
+                location.getWorldName(), location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
+        if (player.getCurrentServer().equals(targetServer)) {
+            requestMessage.setType(Type.INSTANT);
+        } else {
+            requestMessage.setType(Type.ON_JOIN);
+            success = player.connect(targetServer) ? TeleportRequestResponse.SUCCESS : TeleportRequestResponse.NOT_WHITELISTED;
+        }
+
+        this.platform.getMessenger().sendData(targetServer, requestMessage);
         return success;
     }
 

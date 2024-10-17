@@ -1,16 +1,19 @@
 package net.savagedev.tpa.spigot.model;
 
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Location;
 import net.savagedev.tpa.common.messaging.ChannelConstants;
 import net.savagedev.tpa.common.messaging.messages.Message;
 import net.savagedev.tpa.spigot.BungeeTpSpigotPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 public class SpigotPlayer implements BungeeTpPlayer {
@@ -47,6 +50,25 @@ public class SpigotPlayer implements BungeeTpPlayer {
     }
 
     @Override
+    public void teleportTo(Location location) {
+        final Optional<String> worldName = location.getWorldName();
+
+        if (worldName.isPresent()) {
+            final World world = Bukkit.getWorld(worldName.get());
+
+            if (world == null) {
+                throw new IllegalStateException("Cannot teleport to a null world");
+            }
+
+            this.player.teleport(new org.bukkit.Location(world, location.getX(),
+                    location.getY(), location.getZ(), location.getYaw(), location.getPitch()));
+        } else {
+            this.player.teleport(new org.bukkit.Location(Bukkit.getWorlds().get(0), location.getX(),
+                    location.getY(), location.getZ(), location.getYaw(), location.getPitch()));
+        }
+    }
+
+    @Override
     public void sendMessage(String message) {
         this.player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
@@ -58,5 +80,14 @@ public class SpigotPlayer implements BungeeTpPlayer {
 
     public Player getHandle() {
         return this.player;
+    }
+
+    @Override
+    public void teleportHere(BungeeTpPlayer player) {
+        if (player == null) {
+            throw new IllegalStateException("Cannot teleport a null player");
+        }
+
+        player.teleportTo(this);
     }
 }

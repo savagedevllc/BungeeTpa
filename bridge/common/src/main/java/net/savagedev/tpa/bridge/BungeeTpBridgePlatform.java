@@ -3,8 +3,10 @@ package net.savagedev.tpa.bridge;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Teleportable;
 import net.savagedev.tpa.common.messaging.Messenger;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,13 +22,15 @@ public interface BungeeTpBridgePlatform {
 
     BungeeTpPlayer getABungeeTpPlayer();
 
-    Map<UUID, UUID> getTpCache();
+    Map<UUID, Teleportable> getTpCache();
 
     String getOfflineUsername(UUID uuid);
 
     Optional<AbstractVanishHook> getVanishProvider();
 
     Optional<AbstractEconomyHook> getEconomyProvider();
+
+    Collection<String> getAllWorlds();
 
     String getVersion();
 

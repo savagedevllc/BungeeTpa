@@ -5,6 +5,8 @@ import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractServer<T> implements Server<T> {
@@ -16,8 +18,11 @@ public abstract class AbstractServer<T> implements Server<T> {
     private boolean sentBasicInfo;
     private boolean economySupport;
 
+    private final Collection<String> worlds = new HashSet<>();
+
     private String serverSoftware;
     private String bridgeVersion;
+
 
     public AbstractServer(String id, T handle, BungeeTpPlugin plugin) {
         this.plugin = plugin;
@@ -73,6 +78,11 @@ public abstract class AbstractServer<T> implements Server<T> {
         this.plugin.getPlatform().getMessenger().sendData(this, new MessageCurrencyFormatRequest(Setting.TELEPORT_COST.asFloat()));
         this.plugin.getServerManager().addAwaitingCurrencyFormat(this.getId(), future);
         return future;
+    }
+
+    @Override
+    public Collection<String> getAllWorlds() {
+        return this.worlds;
     }
 
     @Override

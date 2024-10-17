@@ -5,6 +5,7 @@ import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
+import net.savagedev.tpa.bridge.model.Teleportable;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.spigot.hook.economy.VaultEconomyHook;
 import net.savagedev.tpa.spigot.hook.vanish.EssentialsVanishHook;
@@ -14,12 +15,16 @@ import net.savagedev.tpa.spigot.listeners.ConnectionListener;
 import net.savagedev.tpa.spigot.messenger.SpigotPluginMessenger;
 import net.savagedev.tpa.spigot.model.SpigotPlayer;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePlatform {
     private static final int B_STATS_ID = 20995;
@@ -95,6 +100,13 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
+    public Collection<String> getAllWorlds() {
+        return Bukkit.getWorlds().stream()
+                .map(World::getName)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public String getVersion() {
         return this.getDescription().getVersion();
     }
@@ -127,7 +139,7 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
-    public Map<UUID, UUID> getTpCache() {
+    public Map<UUID, Teleportable> getTpCache() {
         return this.plugin.getTpCache();
     }
 
