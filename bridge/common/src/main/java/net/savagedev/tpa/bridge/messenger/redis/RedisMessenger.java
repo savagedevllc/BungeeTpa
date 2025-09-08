@@ -4,10 +4,7 @@ import net.savagedev.tpa.bridge.BungeeTpBridgePlatform;
 import net.savagedev.tpa.bridge.messenger.BungeeTpBridgeMessenger;
 import net.savagedev.tpa.common.messaging.messages.Message;
 
-/*
- * Yes, I know it's bizarre and isn't D.R.Y. compliant to have each platform to have its own implementation of Redis/RabbitMQ messenger.
- * It's only structured like this since each platform only has "decoder functions" that are necessary for its respective platform.
- */
+// Hold off on this for now - it isn't necessary. We got bigger fish to fry.
 public class RedisMessenger extends BungeeTpBridgeMessenger<Void> {
     public RedisMessenger(BungeeTpBridgePlatform platform) {
         super(platform);
