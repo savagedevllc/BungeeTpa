@@ -16,10 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
-/*
- * Yes, I know it's bizarre and isn't D.R.Y. compliant to have each platform to have its own implementation of Redis/RabbitMQ messenger.
- * It's only structured like this since each platform only has "decoder functions" that are necessary for its respective platform.
- */
+// Hold off on this for now - it isn't necessary. There are bigger fish to fry.
 public class RabbitMqMessenger extends BungeeTpMessenger<Void> implements BiConsumer<String, byte[]> {
     private final Consumer rabbitMqConsumer = new LocalRabbitMqListener(this);
 
@@ -108,7 +105,7 @@ public class RabbitMqMessenger extends BungeeTpMessenger<Void> implements BiCons
 
     @Override
     public void accept(String channel, byte[] message) {
-        // TODO: Same shit here. Get the serverId somehow, or figure out a way to not need the serverId.
+        // TODO: Get the serverId somehow, or figure out a way to not need the serverId.
         super.handleIncomingMessage(null, channel, message);
     }
 

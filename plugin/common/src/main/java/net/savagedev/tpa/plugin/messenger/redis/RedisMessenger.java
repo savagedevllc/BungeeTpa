@@ -13,10 +13,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.BiConsumer;
 
-/*
- * Yes, I know it's bizarre and isn't D.R.Y. compliant to have each platform to have its own implementation of Redis/RabbitMQ messenger.
- * It's only structured like this since each platform only has "decoder functions" that are necessary for its respective platform.
- */
+// Hold off on this for now - it isn't necessary. There are bigger fish to fry.
 public class RedisMessenger extends BungeeTpMessenger<Void> implements BiConsumer<String, String> {
     private static final Executor JEDIS_PUBSUB_EXECUTOR = Executors.newSingleThreadExecutor();
 
@@ -84,13 +81,9 @@ public class RedisMessenger extends BungeeTpMessenger<Void> implements BiConsume
 
     @Override
     public void accept(String channel, String message) {
-        // TODO: I somehow NEED to get the serverId here... But the server itself doesn't know its ID... :thonk:
-        // ^ Or do I? ...
         super.handleIncomingMessage(null, channel, message.getBytes(StandardCharsets.UTF_8));
     }
 
-    // TODO: Move this to the common module. This can just be reused across both platforms.
-    //       Do the same with the RabbitMQ implementation.
     private static final class LocalPubSubListener extends JedisPubSub {
         private final BiConsumer<String, String> messageConsumer;
 
