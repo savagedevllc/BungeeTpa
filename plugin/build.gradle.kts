@@ -2,8 +2,8 @@ group = "net.savagedev"
 version = "1.0.4"
 
 subprojects {
-    java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    dependencies {
+        implementation("redis.clients:jedis:5.2.0")
+        implementation("com.rabbitmq:amqp-client:5.24.0")
     }
 }

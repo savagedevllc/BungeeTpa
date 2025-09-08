@@ -43,14 +43,15 @@ public class SpongePlayer implements BungeeTpPlayer {
         if (worldName.isPresent()) {
             final Optional<ServerWorld> world = Sponge.server().worldManager().world(ResourceKey.minecraft(worldName.get()));
 
-            if (!world.isPresent()) {
-                throw new IllegalStateException("Cannot teleport to a null world");
+            if (world.isEmpty()) {
+                this.player.sendMessage(Component.text("Unknown world '" + worldName.get() + "'"));
+                return;
             }
 
             this.player.setLocation(ServerLocation.of(world.get(), location.getX(),
                     location.getY(), location.getZ()));
         } else {
-            this.player.setLocation(ServerLocation.of(Sponge.server().worldManager().defaultWorld(), location.getX(),
+            this.player.setLocation(ServerLocation.of(this.player.world(), location.getX(),
                     location.getY(), location.getZ()));
         }
     }

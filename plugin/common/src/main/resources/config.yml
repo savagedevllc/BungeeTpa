@@ -14,3 +14,6 @@ blacklist:
 
 # How much it costs to teleport to another player. (0 to disable) Economy can be bypassed with the permission bungeetp.bypass.economy
 teleport-cost: 25.0
+
+# Get rid of that annoying little message that pops up whenever you try to tab complete a world on a server that hasn't been connected to yet.
+suppress-world-autocomplete-message: false

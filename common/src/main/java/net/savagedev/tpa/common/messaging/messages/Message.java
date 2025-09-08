@@ -7,7 +7,7 @@ public abstract class Message {
 
     public void setServerId(String serverId) {
         if (this.serverId != null) {
-            throw new IllegalStateException("Server name already set");
+            throw new IllegalStateException("Server id already set");
         }
         this.serverId = serverId;
     }

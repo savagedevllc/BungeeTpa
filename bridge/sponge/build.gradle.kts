@@ -3,7 +3,7 @@ import org.spongepowered.plugin.metadata.model.PluginDependency
 
 plugins {
     id("java-library")
-    id("com.github.johnrengelman.shadow").version("8.1.1")
+    id("com.gradleup.shadow").version("9.1.0")
     id("org.spongepowered.gradle.plugin").version("2.0.2")
 }
 
@@ -21,6 +21,9 @@ tasks {
         archiveFileName.set("${rootProject.name}-${project.parent?.name}-${project.name}-${project.version}.jar")
 
         relocate("org.bstats", "net.savagedev.tpa.metrics")
+
+        relocate("redis.clients", "net.savagedev.tpa.redis")
+        relocate("com.rabbitmq", "net.savagedev.tpa.rabbitmq")
 
         minimize()
     }

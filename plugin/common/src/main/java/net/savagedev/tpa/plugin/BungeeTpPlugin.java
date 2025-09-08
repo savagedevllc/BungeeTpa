@@ -15,6 +15,7 @@ import net.savagedev.tpa.plugin.config.Lang;
 import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.config.updates.ConfigUpdater_v1;
 import net.savagedev.tpa.plugin.config.updates.ConfigUpdater_v2;
+import net.savagedev.tpa.plugin.config.updates.ConfigUpdater_v3;
 import net.savagedev.tpa.plugin.model.TeleportManager;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 import net.savagedev.tpa.plugin.model.player.manager.PlayerManager;
@@ -42,6 +43,8 @@ public class BungeeTpPlugin {
 
     private TeleportManager teleportManager;
 
+    private int housekeeperTaskId;
+
     public BungeeTpPlugin(BungeeTpPlatform platform, Function<UUID, ProxyPlayer<?, ?>> playerLoaderFunction, Function<String, Server<?>> serverLoaderFunction) {
         this.playerManager = new PlayerManager(playerLoaderFunction);
         this.serverManager = new ServerManager(serverLoaderFunction);
@@ -51,15 +54,23 @@ public class BungeeTpPlugin {
     public void enable() {
         this.platform.getMessenger().init();
         this.teleportManager = new TeleportManager(this.platform);
+        this.loadAllServers();
         this.initConfigs();
         this.applyConfigUpdates();
         this.initCommands();
-        this.platform.scheduleTaskRepeating(new RequestExpireHousekeeperTask(this), 1000L);
+        this.housekeeperTaskId = this.platform.scheduleTaskRepeating(new RequestExpireHousekeeperTask(this), 1000L);
     }
 
     public void disable() {
         this.teleportManager.shutdown();
         this.platform.getMessenger().shutdown();
+        this.platform.cancelTask(this.housekeeperTaskId);
+    }
+
+    private void loadAllServers() {
+        for (String serverId : this.platform.getAllServerIds()) {
+            this.serverManager.getOrLoad(serverId);
+        }
     }
 
     private void initConfigs() {
@@ -106,6 +117,7 @@ public class BungeeTpPlugin {
         // TODO: A better way to do this.
         new ConfigUpdater_v1();
         new ConfigUpdater_v2();
+        new ConfigUpdater_v3();
     }
 
     private void initCommands() {

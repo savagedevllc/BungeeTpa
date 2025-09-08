@@ -6,7 +6,7 @@ import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
-import net.savagedev.tpa.bridge.model.Teleportable;
+import net.savagedev.tpa.bridge.model.TeleportTarget;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.sponge.hook.economy.SpongeEconomyHook;
 import net.savagedev.tpa.sponge.listener.ConnectionListener;
@@ -98,7 +98,7 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
-    public Map<UUID, Teleportable> getTpCache() {
+    public Map<UUID, TeleportTarget> getTpCache() {
         return this.plugin.getTpCache();
     }
 

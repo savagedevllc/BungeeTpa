@@ -14,7 +14,15 @@ public class TpaCommand extends AbstractTeleportCommand {
     }
 
     @Override
-    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean paid, String formattedAmount) {
+    protected void teleport(ProxyPlayer<?, ?> player, ProxyPlayer<?, ?> other, boolean paid, double amount, String formattedAmount) {
+        if (!other.getCurrentServer().isAccessibleTo(player)) {
+            Lang.RESTRICTED_SERVER.send(player);
+            if (paid) {
+                player.deposit(amount);
+            }
+            return;
+        }
+
         final boolean sent = this.plugin.getTeleportManager().pushRequest(new TeleportRequest(player, other, TeleportRequest.Direction.TO_RECEIVER, paid)).isSuccess();
         if (sent) {
             Lang.TPA_REQUEST_RECEIVED.send(other, new Lang.Placeholder("%player%", player.getName()),

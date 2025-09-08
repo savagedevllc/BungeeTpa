@@ -9,6 +9,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
 import net.savagedev.build.BuildParameters;
 import net.savagedev.tpa.common.messaging.Messenger;
@@ -28,16 +29,28 @@ import org.bstats.velocity.Metrics;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-@Plugin(id = "velocitytp", name = "VelocityTP", version = BuildParameters.VERSION,
-        url = "https://www.savagedev.net", description = "Teleport across a Velocity network.", authors = {"SavageAvocado"})
+@Plugin(id = "velocitytp",
+        name = "VelocityTP",
+        version = BuildParameters.VERSION,
+        url = "https://www.savagedev.net",
+        description = "Teleport across a Velocity network.",
+        authors = {"SavageAvocado"})
 public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     private static final int B_STATS_ID = 20994;
 
     public static final Function<String, Component> CHAT_MESSAGE_FORMATTING_FUNCTION = new VelocityChatFormattingFunction();
+
+    private final Map<Integer, ScheduledTask> taskMap = new HashMap<>();
+    private final AtomicInteger taskIdCounter = new AtomicInteger();
 
     private final BungeeTpPlugin plugin;
     private final Path dataPath;
@@ -81,17 +94,31 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     }
 
     @Override
-    public void scheduleTaskDelayed(Runnable task, long delay) {
-        this.server.getScheduler().buildTask(this, task)
+    public int scheduleTaskDelayed(Runnable task, long delay) {
+        final ScheduledTask scheduledTask = this.server.getScheduler().buildTask(this, task)
                 .delay(delay, TimeUnit.MILLISECONDS)
                 .schedule();
+        final int taskId = this.taskIdCounter.getAndIncrement();
+        this.taskMap.put(taskId, scheduledTask);
+        return taskId;
     }
 
     @Override
-    public void scheduleTaskRepeating(Runnable task, long period) {
-        this.server.getScheduler().buildTask(this, task)
+    public int scheduleTaskRepeating(Runnable task, long period) {
+        final ScheduledTask scheduledTask = this.server.getScheduler().buildTask(this, task)
                 .repeat(period, TimeUnit.MILLISECONDS)
                 .schedule();
+        final int taskId = this.taskIdCounter.getAndIncrement();
+        this.taskMap.put(taskId, scheduledTask);
+        return taskId;
+    }
+
+    @Override
+    public void cancelTask(int id) {
+        final ScheduledTask scheduledTask = this.taskMap.remove(id);
+        if (scheduledTask != null) {
+            scheduledTask.cancel();
+        }
     }
 
     @Override
@@ -102,6 +129,14 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
     @Override
     public Messenger<Server<?>> getMessenger() {
         return this.messenger;
+    }
+
+    @Override
+    public Collection<String> getAllServerIds() {
+        return this.getServer().getAllServers()
+                .stream()
+                .map(server -> server.getServerInfo().getName())
+                .collect(Collectors.toSet());
     }
 
     @Override

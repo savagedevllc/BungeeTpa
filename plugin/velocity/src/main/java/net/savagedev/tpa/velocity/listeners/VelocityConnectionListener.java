@@ -2,6 +2,7 @@ package net.savagedev.tpa.velocity.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.listeners.AbstractConnectionListener;
@@ -16,9 +17,12 @@ public class VelocityConnectionListener extends AbstractConnectionListener {
     }
 
     @Subscribe
-    public void on(ServerPostConnectEvent event) {
+    public void on(ServerConnectedEvent event) {
         super.handleConnectEvent(event.getPlayer().getUniqueId());
-        // TODO: This is disgusting. Do better.
+    }
+
+    @Subscribe
+    public void on(ServerPostConnectEvent event) {
         super.handleServerConnectEvent(this.plugin.getPlayer(event.getPlayer().getUniqueId())
                         .orElseThrow(() -> new IllegalStateException("")),
                 event.getPlayer().getCurrentServer().get().getServerInfo().getName());

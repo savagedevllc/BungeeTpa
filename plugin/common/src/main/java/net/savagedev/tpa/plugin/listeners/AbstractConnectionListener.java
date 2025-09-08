@@ -32,6 +32,8 @@ public abstract class AbstractConnectionListener {
         final Server<?> server = this.plugin.getServerManager().getOrLoad(serverId)
                 .orElseThrow(() -> new IllegalStateException("Server not loaded."));
 
+        this.plugin.getTeleportManager().completeTeleportToCoords(player);
+
         this.plugin.getPlatform().scheduleTaskDelayed(() -> {
             if (server.hasSentBasicInfo()) {
                 return;
@@ -44,7 +46,7 @@ public abstract class AbstractConnectionListener {
                 }
                 this.plugin.getLogger().warning("BungeeTP bridge not detected on the server '" + serverId + ".' Is it installed?");
             }), 1000L); // Give it some time to receive the message & update the ServerManager.
-        }, 1000);
+        }, 1000L);
     }
 
     protected void handleDisconnectEvent(ProxyPlayer<?, ?> player) {

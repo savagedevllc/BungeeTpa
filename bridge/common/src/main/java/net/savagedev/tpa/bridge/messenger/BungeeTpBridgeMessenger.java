@@ -130,7 +130,8 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
     private void handleBasicInfoRequest(MessageBasicServerInfoRequest ignored) {
         this.sendData(new MessageBasicServerInfoResponse(this.platform.getSoftwareName(), this.platform.getVersion(),
-                this.platform.getEconomyProvider().isPresent(), this.platform.getAllWorlds()));
+                this.platform.getEconomyProvider().isPresent(), this.platform.isWhitelisted(),
+                this.platform.getAllWorlds(), this.platform.getWhitelist()));
     }
 
     private void handleCurrencyFormatRequest(MessageCurrencyFormatRequest request) {

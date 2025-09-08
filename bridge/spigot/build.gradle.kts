@@ -1,5 +1,5 @@
 plugins {
-    id("com.github.johnrengelman.shadow").version("8.1.1")
+    id("com.gradleup.shadow").version("9.1.0")
 }
 
 group = project.parent?.group!!
@@ -31,6 +31,9 @@ tasks {
         archiveFileName.set("${rootProject.name}-${project.parent?.name}-${project.name}-${project.version}.jar")
 
         relocate("org.bstats", "net.savagedev.tpa.metrics")
+
+        relocate("redis.clients", "net.savagedev.tpa.redis")
+        relocate("com.rabbitmq", "net.savagedev.tpa.rabbitmq")
 
         minimize()
     }

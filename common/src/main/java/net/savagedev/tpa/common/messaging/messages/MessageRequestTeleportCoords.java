@@ -2,7 +2,6 @@ package net.savagedev.tpa.common.messaging.messages;
 
 import com.google.gson.JsonObject;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class MessageRequestTeleportCoords extends AbstractMessageRequestTeleport {
@@ -12,7 +11,7 @@ public class MessageRequestTeleportCoords extends AbstractMessageRequestTeleport
         final UUID requester = new UUID(requesterMostSigBits, requesterLeastSigBits);
 
         String worldName = null;
-        if (!object.get("world").isJsonNull()) {
+        if (object.has("world")) {
             worldName = object.get("world").getAsString();
         }
         final float x = object.get("x").getAsFloat();
@@ -62,8 +61,8 @@ public class MessageRequestTeleportCoords extends AbstractMessageRequestTeleport
         return this.yaw;
     }
 
-    public Optional<String> getWorldName() {
-        return Optional.ofNullable(this.worldName);
+    public String getWorldName() {
+        return this.worldName;
     }
 
     @Override

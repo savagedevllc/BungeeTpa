@@ -9,6 +9,7 @@ public enum Lang {
     UNKNOWN_PLAYER("unknown_player"),
     PLAYER_OFFLINE("player_offline"),
     RESTRICTED_SERVER("restricted_server"),
+    RESTRICTED_SERVER_OTHER("restricted_server_other"),
     TELEPORT_SELF("teleport_self"),
     NO_REQUESTS("no_requests"),
     NO_REQUEST_FROM("no_request_from"),

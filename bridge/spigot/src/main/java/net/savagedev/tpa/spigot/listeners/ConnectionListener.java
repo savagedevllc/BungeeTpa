@@ -16,7 +16,7 @@ public class ConnectionListener extends AbstractConnectionListener implements Li
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerJoinEvent e) {
-        super.handleJoinEvent(this.plugin.getBungeeTpPlayer(e.getPlayer().getUniqueId()));
+    public void on(PlayerJoinEvent event) {
+        super.handleJoinEvent(this.plugin.getBungeeTpPlayer(event.getPlayer().getUniqueId()));
     }
 }

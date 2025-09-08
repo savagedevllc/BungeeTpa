@@ -82,4 +82,9 @@ public abstract class AbstractProxyPlayer<T, M> implements ProxyPlayer<T, M> {
     public boolean equals(Object obj) {
         return obj instanceof ProxyPlayer && ((ProxyPlayer<?, ?>) obj).getUniqueId().equals(this.getUniqueId());
     }
+
+    @Override
+    public int hashCode() {
+        return this.getUniqueId().hashCode();
+    }
 }

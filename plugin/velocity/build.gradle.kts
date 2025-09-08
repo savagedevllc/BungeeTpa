@@ -1,25 +1,26 @@
 plugins {
-    id("com.github.johnrengelman.shadow").version("8.1.1")
-
+    id("com.gradleup.shadow").version("9.1.0")
     id("net.kyori.blossom").version("2.0.1")
 }
 
 group = project.parent!!.group
 version = project.parent!!.version
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
-
-    flatDir {
-        dirs("D:\\Java Projects\\SavageDev\\BungeeTpa\\plugin\\velocity\\build\\libs")
-    }
 }
 
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:3.1.0")
-    annotationProcessor("com.velocitypowered:velocity-api:3.1.0")
+    compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
 
     implementation("org.bstats:bstats-velocity:3.0.2")
+
     implementation(project(":plugin:common"))
     implementation(project(":common"))
 }
@@ -39,6 +40,9 @@ tasks {
         archiveFileName.set("${rootProject.name}-${project.name}-${project.version}.jar")
 
         relocate("org.bstats", "net.savagedev.tpa.metrics")
+
+        relocate("redis.clients", "net.savagedev.tpa.redis")
+        relocate("com.rabbitmq", "net.savagedev.tpa.rabbitmq")
 
         minimize()
     }

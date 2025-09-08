@@ -21,11 +21,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
 public final class TeleportManager {
-    private final Map<UUID, Deque<TeleportRequest>> requestMap = new HashMap<>();
+    private final Map<UUID, Deque<TeleportRequest>> requestMap = new ConcurrentHashMap<>();
+    private final Map<UUID, MessageRequestTeleportCoords> locationTeleportCache = new HashMap<>();
 
     private final BungeeTpPlatform platform;
 
@@ -33,15 +35,16 @@ public final class TeleportManager {
         this.platform = platform;
     }
 
-    // TODO: Find a way to call this on shutdown before the disconnect event, or cancel the disconnect event or something.
     public void shutdown() {
-        // Make sure all players are refunded in the event of a server shutdown.
         int count = 0;
         for (TeleportRequest request : this.aggregateRequests()) {
+            // TODO: Replace this with a write to a local cache (or the database) to store all pending requests &
+            //       reload them all upon restarting & send players a message about their pending request.
             request.getSender().deposit(Setting.TELEPORT_COST.asFloat()).join();
             count++;
         }
-        this.platform.getLogger().info("Refunded " + count + " player(s).");
+
+        // this.platform.getLogger().info("Saved " + count + " pending request" + (count == 1 ? "." : "s."));
         this.requestMap.clear();
     }
 
@@ -98,21 +101,40 @@ public final class TeleportManager {
 
         final MessageRequestTeleportCoords requestMessage = new MessageRequestTeleportCoords(player.getUniqueId(),
                 location.getWorldName(), location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
+        requestMessage.setType(Type.INSTANT);
+        this.locationTeleportCache.put(player.getUniqueId(), requestMessage);
+
         if (player.getCurrentServer().equals(targetServer)) {
-            requestMessage.setType(Type.INSTANT);
+            this.completeTeleportToCoords(player);
         } else {
-            requestMessage.setType(Type.ON_JOIN);
             success = player.connect(targetServer) ? TeleportRequestResponse.SUCCESS : TeleportRequestResponse.NOT_WHITELISTED;
         }
 
-        this.platform.getMessenger().sendData(targetServer, requestMessage);
         return success;
     }
 
+    public void completeTeleportToCoords(ProxyPlayer<?, ?> player) {
+        final MessageRequestTeleportCoords message = this.locationTeleportCache.remove(player.getUniqueId());
+
+        if (message == null) {
+            return;
+        }
+
+        this.platform.getMessenger().sendData(player.getCurrentServer(), message);
+    }
+
     public TeleportRequestResponse pushRequest(TeleportRequest request) {
+        boolean canAccess;
+
+        if (request.getDirection() == Direction.TO_RECEIVER) {
+            canAccess = request.getReceiver().getCurrentServer().isAccessibleTo(request.getSender());
+        } else {
+            canAccess = request.getSender().getCurrentServer().isAccessibleTo(request.getReceiver());
+        }
+
         this.requestMap.computeIfAbsent(request.getReceiver().getUniqueId(), k -> new ConcurrentLinkedDeque<>())
                 .push(request);
-        return TeleportRequestResponse.SUCCESS;
+        return canAccess ? TeleportRequestResponse.SUCCESS : TeleportRequestResponse.NOT_WHITELISTED;
     }
 
     public Optional<TeleportRequest> popMostRecentRequest(ProxyPlayer<?, ?> player) {

@@ -3,7 +3,7 @@ description: Teleport across a BungeeCord network.
 
 softdepend: [ Vault, Essentials, SuperVanish, PremiumVanish ]
 
-author: SavageAvocado.
+author: SavageAvocado
 website: savagedev.net
 
 api-version: 1.13

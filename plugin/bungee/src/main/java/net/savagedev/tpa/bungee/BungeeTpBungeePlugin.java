@@ -1,6 +1,7 @@
 package net.savagedev.tpa.bungee;
 
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.savagedev.tpa.bungee.command.BungeeCommand;
@@ -20,8 +21,10 @@ import org.bstats.bungeecord.Metrics;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
     private static final int B_STATS_ID = 20993;
@@ -59,13 +62,18 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
     }
 
     @Override
-    public void scheduleTaskDelayed(Runnable task, long delay) {
-        this.getProxy().getScheduler().schedule(this, task, delay, TimeUnit.MILLISECONDS);
+    public int scheduleTaskDelayed(Runnable task, long delay) {
+        return this.getProxy().getScheduler().schedule(this, task, delay, TimeUnit.MILLISECONDS).getId();
     }
 
     @Override
-    public void scheduleTaskRepeating(Runnable task, long period) {
-        this.getProxy().getScheduler().schedule(this, task, 0L, period, TimeUnit.MILLISECONDS);
+    public int scheduleTaskRepeating(Runnable task, long period) {
+        return this.getProxy().getScheduler().schedule(this, task, 0L, period, TimeUnit.MILLISECONDS).getId();
+    }
+
+    @Override
+    public void cancelTask(int id) {
+        this.getProxy().getScheduler().cancel(id);
     }
 
     @Override
@@ -76,6 +84,14 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
     @Override
     public Messenger<Server<?>> getMessenger() {
         return this.messenger;
+    }
+
+    @Override
+    public Collection<String> getAllServerIds() {
+        return this.getProxy().getServers().values()
+                .stream()
+                .map(ServerInfo::getName)
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -1,34 +1,39 @@
 package net.savagedev.tpa.velocity.config;
 
 import net.savagedev.tpa.plugin.config.loader.ConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.List;
 
 public class VelocityConfigurationNode implements ConfigurationNode {
-    private final ninja.leaping.configurate.ConfigurationNode node;
+    private final org.spongepowered.configurate.ConfigurationNode node;
 
-    public VelocityConfigurationNode(ninja.leaping.configurate.ConfigurationNode root) {
+    public VelocityConfigurationNode(org.spongepowered.configurate.ConfigurationNode root) {
         this.node = root;
     }
 
-    ninja.leaping.configurate.ConfigurationNode getHandle() {
+    org.spongepowered.configurate.ConfigurationNode getHandle() {
         return this.node;
     }
 
     // TODO: This is very lazy: Implement caching of some sort.
     @Override
     public ConfigurationNode node(String path) {
-        return new VelocityConfigurationNode(this.node.getNode(path));
+        return new VelocityConfigurationNode(this.node.node(path));
     }
 
     @Override
     public void set(Object value) {
-        this.node.setValue(value);
+        try {
+            this.node.set(value);
+        } catch (SerializationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean noChild(String name) {
-        return this.node.getNode(name).isEmpty();
+        return this.node.node(name).isNull();
     }
 
     @Override
@@ -68,6 +73,10 @@ public class VelocityConfigurationNode implements ConfigurationNode {
 
     @Override
     public <T> List<T> getList(Class<T> t) {
-        return this.node.getList(o -> (T) o);
+        try {
+            return this.node.getList(t);
+        } catch (SerializationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

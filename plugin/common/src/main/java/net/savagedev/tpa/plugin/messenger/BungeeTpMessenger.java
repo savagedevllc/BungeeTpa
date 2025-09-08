@@ -7,9 +7,11 @@ import net.savagedev.tpa.common.messaging.messages.MessageBasicServerInfoRespons
 import net.savagedev.tpa.common.messaging.messages.MessageCurrencyFormatResponse;
 import net.savagedev.tpa.common.messaging.messages.MessageEconomyResponse;
 import net.savagedev.tpa.common.messaging.messages.MessagePlayerInfo;
+import net.savagedev.tpa.common.messaging.messages.MessageWhitelistInfo;
+import net.savagedev.tpa.common.messaging.messages.MessageWorldInfo;
+import net.savagedev.tpa.common.messaging.messages.MessageWorldInfo.Action;
 import net.savagedev.tpa.plugin.BungeeTpPlugin;
 import net.savagedev.tpa.plugin.model.economy.RemoteEconomyResponse;
-import net.savagedev.tpa.plugin.model.server.Server;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMessenger<T> {
+public abstract class BungeeTpMessenger<T> extends AbstractMessenger<T> {
     private static final Map<String, Function<JsonObject, Message>> DECODER_FUNCTIONS = new HashMap<>();
 
     static {
@@ -25,6 +27,8 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
         DECODER_FUNCTIONS.put(MessageEconomyResponse.class.getSimpleName(), MessageEconomyResponse::deserialize);
         DECODER_FUNCTIONS.put(MessageBasicServerInfoResponse.class.getSimpleName(), MessageBasicServerInfoResponse::deserialize);
         DECODER_FUNCTIONS.put(MessageCurrencyFormatResponse.class.getSimpleName(), MessageCurrencyFormatResponse::deserialize);
+        DECODER_FUNCTIONS.put(MessageWorldInfo.class.getSimpleName(), MessageWorldInfo::deserialize);
+        DECODER_FUNCTIONS.put(MessageWhitelistInfo.class.getSimpleName(), MessageWhitelistInfo::deserialize);
     }
 
     private final Map<String, Consumer<? extends Message>> consumers = new HashMap<>();
@@ -34,6 +38,8 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
         consumers.put(MessageEconomyResponse.class.getSimpleName(), new EconomyWithdrawResponseConsumer());
         consumers.put(MessageBasicServerInfoResponse.class.getSimpleName(), new ServerInfoConsumer());
         consumers.put(MessageCurrencyFormatResponse.class.getSimpleName(), new CurrencyFormatConsumer());
+        consumers.put(MessageWorldInfo.class.getSimpleName(), new WorldInfoConsumer());
+        consumers.put(MessageWhitelistInfo.class.getSimpleName(), new WhitelistInfoConsumer());
     }
 
     private final BungeeTpPlugin plugin;
@@ -86,7 +92,9 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
                         server.setServerSoftware(serverInfo.getSoftwareName());
                         server.setBridgeVersion(serverInfo.getBridgeVersion());
                         server.setEconomySupport(serverInfo.hasEconomySupport());
+                        server.setWhitelistEnabled(serverInfo.isWhitelisted());
                         server.getAllWorlds().addAll(serverInfo.getWorlds());
+                        server.getWhitelist().addAll(serverInfo.getWhitelist());
                     });
         }
     }
@@ -101,6 +109,40 @@ public abstract class BungeeTpMessenger<T extends Server<?>> extends AbstractMes
             }
 
             future.complete(currencyFormatResponse.getFormattedAmount());
+        }
+    }
+
+    private final class WorldInfoConsumer implements Consumer<MessageWorldInfo> {
+        @Override
+        public void accept(MessageWorldInfo worldInfo) {
+            plugin.getServerManager().getOrLoad(worldInfo.getServerId())
+                    .ifPresent(server -> {
+                        final Action action = worldInfo.getAction();
+                        if (action == Action.ADD) {
+                            server.getAllWorlds().add(worldInfo.getWorldId());
+                        } else {
+                            server.getAllWorlds().remove(worldInfo.getWorldId());
+                        }
+                    });
+        }
+    }
+
+    private final class WhitelistInfoConsumer implements Consumer<MessageWhitelistInfo> {
+        @Override
+        public void accept(MessageWhitelistInfo whitelistInfo) {
+            plugin.getServerManager().getOrLoad(whitelistInfo.getServerId())
+                    .ifPresent(server -> {
+                        final MessageWhitelistInfo.Action action = whitelistInfo.getAction();
+                        if (action == MessageWhitelistInfo.Action.STATUS_CHANGE) {
+                            server.setWhitelistEnabled(whitelistInfo.isActive());
+                            return;
+                        }
+                        if (action == MessageWhitelistInfo.Action.ADD) {
+                            server.getWhitelist().add(whitelistInfo.getUniqueId());
+                        } else {
+                            server.getWhitelist().remove(whitelistInfo.getUniqueId());
+                        }
+                    });
         }
     }
 }

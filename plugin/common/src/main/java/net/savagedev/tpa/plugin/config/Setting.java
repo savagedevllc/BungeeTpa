@@ -12,6 +12,7 @@ public enum Setting {
     TP_REQUEST_EXPIRE("expire"),
     TIME_FORMAT("time-format"),
     BLACKLIST("blacklist"),
+    DISABLE_WORLD_AUTOCOMPLETE_MESSAGE("suppress-world-autocomplete-message"),
     TELEPORT_COST("teleport-cost");
 
     private static ConfigurationLoader s_Loader;

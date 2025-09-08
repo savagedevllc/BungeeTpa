@@ -5,17 +5,20 @@ import net.savagedev.tpa.bridge.BungeeTpBridgePlugin;
 import net.savagedev.tpa.bridge.hook.economy.AbstractEconomyHook;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
-import net.savagedev.tpa.bridge.model.Teleportable;
+import net.savagedev.tpa.bridge.model.TeleportTarget;
 import net.savagedev.tpa.common.messaging.Messenger;
 import net.savagedev.tpa.spigot.hook.economy.VaultEconomyHook;
 import net.savagedev.tpa.spigot.hook.vanish.EssentialsVanishHook;
 import net.savagedev.tpa.spigot.hook.vanish.GenericVanishHook;
 import net.savagedev.tpa.spigot.hook.vanish.SuperVanishPluginHook;
 import net.savagedev.tpa.spigot.listeners.ConnectionListener;
+import net.savagedev.tpa.spigot.listeners.WhitelistListener;
+import net.savagedev.tpa.spigot.listeners.WorldListener;
 import net.savagedev.tpa.spigot.messenger.SpigotPluginMessenger;
 import net.savagedev.tpa.spigot.model.SpigotPlayer;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,6 +42,9 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new ConnectionListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new WhitelistListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new WorldListener(this), this);
+
         this.plugin.enable();
 
         this.hookEconomy();
@@ -53,14 +59,14 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     private void hookVanish() {
-        if (this.getServer().getPluginManager().isPluginEnabled("Essentials")) {
-            this.vanishProvider = new EssentialsVanishHook(this);
-            return;
-        }
-
         if (this.getServer().getPluginManager().isPluginEnabled("SuperVanish") ||
                 this.getServer().getPluginManager().isPluginEnabled("PremiumVanish")) {
             this.vanishProvider = new SuperVanishPluginHook(this);
+            return;
+        }
+
+        if (this.getServer().getPluginManager().isPluginEnabled("Essentials")) {
+            this.vanishProvider = new EssentialsVanishHook(this);
             return;
         }
 
@@ -107,6 +113,13 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
+    public Collection<UUID> getWhitelist() {
+        return this.getServer().getWhitelistedPlayers().stream()
+                .map(OfflinePlayer::getUniqueId)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public String getVersion() {
         return this.getDescription().getVersion();
     }
@@ -114,6 +127,11 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     @Override
     public String getSoftwareName() {
         return this.getServer().getName();
+    }
+
+    @Override
+    public boolean isWhitelisted() {
+        return this.getServer().hasWhitelist();
     }
 
     @Override
@@ -139,7 +157,7 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
-    public Map<UUID, Teleportable> getTpCache() {
+    public Map<UUID, TeleportTarget> getTpCache() {
         return this.plugin.getTpCache();
     }
 

@@ -1,6 +1,6 @@
 package net.savagedev.tpa.spigot.hook.vanish;
 
-import de.myzelyam.api.vanish.PlayerHideEvent;
+import de.myzelyam.api.vanish.PlayerVanishStateChangeEvent;
 import de.myzelyam.api.vanish.VanishAPI;
 import net.savagedev.tpa.bridge.hook.vanish.AbstractVanishHook;
 import net.savagedev.tpa.bridge.model.BungeeTpPlayer;
@@ -22,8 +22,8 @@ public class SuperVanishPluginHook extends AbstractVanishHook implements Listene
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerHideEvent event) {
-        super.onVanishEvent(this.plugin.getBungeeTpPlayer(event.getPlayer().getUniqueId()), event.isSilent());
+    public void on(PlayerVanishStateChangeEvent event) {
+        super.onVanishEvent(this.plugin.getBungeeTpPlayer(event.getUUID()), event.isVanishing());
     }
 
     @Override

@@ -57,13 +57,14 @@ public class SpigotPlayer implements BungeeTpPlayer {
             final World world = Bukkit.getWorld(worldName.get());
 
             if (world == null) {
-                throw new IllegalStateException("Cannot teleport to a null world");
+                this.player.sendMessage(ChatColor.RED + "Unknown world '" + worldName.get() + "'");
+                return;
             }
 
             this.player.teleport(new org.bukkit.Location(world, location.getX(),
                     location.getY(), location.getZ(), location.getYaw(), location.getPitch()));
         } else {
-            this.player.teleport(new org.bukkit.Location(Bukkit.getWorlds().get(0), location.getX(),
+            this.player.teleport(new org.bukkit.Location(this.player.getWorld(), location.getX(),
                     location.getY(), location.getZ(), location.getYaw(), location.getPitch()));
         }
     }

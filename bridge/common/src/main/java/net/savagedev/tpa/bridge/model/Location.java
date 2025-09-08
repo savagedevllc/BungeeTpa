@@ -4,9 +4,9 @@ import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleportCoords;
 
 import java.util.Optional;
 
-public class Location implements Teleportable {
+public class Location implements TeleportTarget {
     public static Location fromMessage(MessageRequestTeleportCoords requestMessage) {
-        return new Location(requestMessage.getWorldName().get(), requestMessage.getX(), requestMessage.getY(),
+        return new Location(requestMessage.getWorldName(), requestMessage.getX(), requestMessage.getY(),
                 requestMessage.getZ(), requestMessage.getYaw(), requestMessage.getPitch());
     }
 
@@ -51,5 +51,10 @@ public class Location implements Teleportable {
     @Override
     public void teleportHere(BungeeTpPlayer player) {
         player.teleportTo(this);
+    }
+
+    @Override
+    public String toString() {
+        return this.getWorldName().orElse("unknown;") + this.x + "," + this.y + "," + this.z;
     }
 }
