@@ -20,7 +20,10 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
+import org.spongepowered.api.profile.GameProfile;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.service.ServiceRegistration;
+import org.spongepowered.api.service.whitelist.WhitelistService;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 
@@ -49,6 +52,10 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
 
     @Listener
     public void on(StartedEngineEvent<Server> ignored) {
+        this.logger.warn("--------------------------------------------------------");
+        this.logger.warn("Due to literally 0 users adopting this version of the plugin, BungeeTP Sponge support has been temporarily dropped so I can better focus my efforts of the Spigot version.");
+        this.logger.warn("--------------------------------------------------------");
+
         Sponge.eventManager().registerListeners(this.container, new ConnectionListener(this));
         this.plugin.enable();
 
@@ -127,6 +134,15 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
+    public Collection<UUID> getWhitelist() {
+        final ServiceRegistration<WhitelistService> whitelistService = Sponge.serviceProvider()
+                .registration(WhitelistService.class).orElseThrow();
+        return whitelistService.service().whitelistedProfiles().join()
+                .stream().map(GameProfile::uuid)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public String getVersion() {
         return this.container.metadata().version().toString();
     }
@@ -134,6 +150,11 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     @Override
     public String getSoftwareName() {
         return "Sponge";
+    }
+
+    @Override
+    public boolean isWhitelisted() {
+        return Sponge.server().isWhitelistEnabled();
     }
 
     @Override
