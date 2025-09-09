@@ -138,9 +138,9 @@ public abstract class BungeeTpMessenger<T> extends AbstractMessenger<T> {
                             return;
                         }
                         if (action == MessageWhitelistInfo.Action.ADD) {
-                            server.getWhitelist().add(whitelistInfo.getUniqueId());
+                            whitelistInfo.getUniqueId().ifPresent(server.getWhitelist()::add);
                         } else {
-                            server.getWhitelist().remove(whitelistInfo.getUniqueId());
+                            whitelistInfo.getUniqueId().ifPresent(server.getWhitelist()::remove);
                         }
                     });
         }

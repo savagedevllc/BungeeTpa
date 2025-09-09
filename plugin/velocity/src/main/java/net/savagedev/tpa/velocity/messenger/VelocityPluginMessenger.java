@@ -15,6 +15,7 @@ import net.savagedev.tpa.velocity.BungeeTpVelocityPlugin;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 public class VelocityPluginMessenger extends BungeeTpMessenger<Server<?>> {
     private static final MinecraftChannelIdentifier CHANNEL_IDENTIFIER = MinecraftChannelIdentifier.from(ChannelConstants.CHANNEL_NAME);
@@ -43,7 +44,12 @@ public class VelocityPluginMessenger extends BungeeTpMessenger<Server<?>> {
 
         String serverId = null;
         if (source instanceof Player) {
-            serverId = ((Player) source).getUsername();
+            final Optional<ServerConnection> currentServer = ((Player) source).getCurrentServer();
+            if (currentServer.isPresent()) {
+                serverId = currentServer.get().getServerInfo().getName();
+            } else {
+                serverId = ((Player) source).getUsername();
+            }
         } else if (source instanceof ServerConnection) {
             serverId = ((ServerConnection) source).getServerInfo().getName();
         }

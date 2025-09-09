@@ -2,20 +2,21 @@ package net.savagedev.tpa.common.messaging.messages;
 
 import com.google.gson.JsonObject;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class MessageWhitelistInfo extends Message {
     public static MessageWhitelistInfo deserialize(JsonObject object) {
         UUID uniqueId = null;
-        if (!object.has("msb") && object.has("lsb")) {
+        if (object.has("msb") && object.has("lsb")) {
             final long mostSigBits = object.get("msb").getAsLong();
             final long leastSigBits = object.get("lsb").getAsLong();
             uniqueId = new UUID(mostSigBits, leastSigBits);
         }
-        return new MessageWhitelistInfo(object.get("is_active").getAsBoolean(), Action.valueOf(object.get("a").getAsString()), uniqueId);
+        return new MessageWhitelistInfo(object.get("is_active").getAsBoolean(), Action.values()[object.get("a").getAsInt()], uniqueId);
     }
 
-    private boolean active;
+    private final boolean active;
 
     private final UUID uniqueId;
 
@@ -27,8 +28,8 @@ public class MessageWhitelistInfo extends Message {
         this.action = action;
     }
 
-    public UUID getUniqueId() {
-        return this.uniqueId;
+    public Optional<UUID> getUniqueId() {
+        return Optional.ofNullable(this.uniqueId);
     }
 
     public Action getAction() {

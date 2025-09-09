@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 public class MessageWorldInfo extends Message {
     public static MessageWorldInfo deserialize(JsonObject object) {
-        return new MessageWorldInfo(Action.valueOf(object.get("a").getAsString()), object.get("n").getAsString());
+        return new MessageWorldInfo(Action.values()[object.get("a").getAsInt()], object.get("n").getAsString());
     }
 
     private final String worldId;
