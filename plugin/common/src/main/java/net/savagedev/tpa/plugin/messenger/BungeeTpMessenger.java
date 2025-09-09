@@ -130,6 +130,8 @@ public abstract class BungeeTpMessenger<T> extends AbstractMessenger<T> {
     private final class WhitelistInfoConsumer implements Consumer<MessageWhitelistInfo> {
         @Override
         public void accept(MessageWhitelistInfo whitelistInfo) {
+            // TODO: Remove this debug:
+            System.out.println("Received new whitelist update: " + whitelistInfo.serialize());
             plugin.getServerManager().getOrLoad(whitelistInfo.getServerId())
                     .ifPresent(server -> {
                         final MessageWhitelistInfo.Action action = whitelistInfo.getAction();

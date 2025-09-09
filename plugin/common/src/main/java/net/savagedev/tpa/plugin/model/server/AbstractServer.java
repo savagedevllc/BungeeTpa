@@ -6,7 +6,6 @@ import net.savagedev.tpa.plugin.config.Setting;
 import net.savagedev.tpa.plugin.model.player.ProxyPlayer;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -113,7 +112,7 @@ public abstract class AbstractServer<T> implements Server<T> {
     public boolean isAccessibleTo(ProxyPlayer<?, ?> player) {
         return (player.hasPermission("bungeetp.bypass.blacklist") || Setting.BLACKLIST.asStringList().stream()
                 .noneMatch(server -> server.equalsIgnoreCase(this.getId()))) &&
-                (this.whitelistEnabled && this.whitelist.contains(player.getUniqueId())) && this.canAccess(player);
+                (!this.whitelistEnabled || this.whitelist.contains(player.getUniqueId())) && this.canAccess(player);
     }
 
     @Override

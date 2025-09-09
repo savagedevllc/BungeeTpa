@@ -29,6 +29,21 @@ public class WhitelistListener extends AbstractWhitelistListener implements List
     private void handleEvent(String fullCommand) {
         final String[] commandParts = fullCommand.split(" ", 3);
 
+        if (commandParts.length < 2) {
+            return;
+        }
+
+        final String commandAction = commandParts[1].toLowerCase(Locale.ROOT);
+
+        switch (commandAction) {
+            case "on":
+                super.handleWhitelistStatusChange(true);
+                return;
+            case "off":
+                super.handleWhitelistStatusChange(false);
+                return;
+        }
+
         if (commandParts.length < 3) {
             return;
         }
@@ -42,18 +57,12 @@ public class WhitelistListener extends AbstractWhitelistListener implements List
 
         final OfflinePlayer player = Bukkit.getOfflinePlayer(commandParts[2]);
 
-        switch (commandParts[1].toLowerCase(Locale.ROOT)) {
+        switch (commandAction) {
             case "add":
                 super.handleWhitelistAddEvent(player.getUniqueId());
                 break;
             case "remove":
                 super.handleWhitelistRemoveEvent(player.getUniqueId());
-                break;
-            case "on":
-                super.handleWhitelistStatusChange(true);
-                break;
-            case "off":
-                super.handleWhitelistStatusChange(false);
         }
     }
 }
