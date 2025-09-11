@@ -1,5 +1,7 @@
 package net.savagedev.tpa.plugin;
 
+import net.savagedev.tpa.common.update.UpdateChecker;
+import net.savagedev.tpa.common.update.UpdateChecker.Info;
 import net.savagedev.tpa.plugin.commands.TpAcceptCommand;
 import net.savagedev.tpa.plugin.commands.TpCancelCommand;
 import net.savagedev.tpa.plugin.commands.TpCommand;
@@ -32,10 +34,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
 public class BungeeTpPlugin {
+    private final UpdateChecker updateChecker = new UpdateChecker();
+
     private final ServerManager serverManager;
     private final PlayerManager playerManager;
 
@@ -59,6 +64,17 @@ public class BungeeTpPlugin {
         this.applyConfigUpdates();
         this.initCommands();
         this.housekeeperTaskId = this.platform.scheduleTaskRepeating(new RequestExpireHousekeeperTask(this), 1000L);
+
+        // Check for an update twice a day.
+        this.platform.scheduleTaskRepeating(() -> {
+            final Info updateInfo = this.updateChecker.checkForUpdateAsync().join();
+
+            if (updateInfo.isUpdateAvailable(this.platform.getPluginVersion())) {
+                this.platform.getLogger().info("A new version is available (" + updateInfo.getTag() + ") at: " + updateInfo.getDownloadUrl());
+            } else {
+                this.platform.getLogger().info("You are running the latest version of BungeeTP! Enjoy :)");
+            }
+        }, TimeUnit.HOURS.toMillis(12));
     }
 
     public void disable() {

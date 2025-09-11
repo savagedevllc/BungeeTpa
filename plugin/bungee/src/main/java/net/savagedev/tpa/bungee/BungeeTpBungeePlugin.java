@@ -99,6 +99,11 @@ public class BungeeTpBungeePlugin extends Plugin implements BungeeTpPlatform {
         return this.getDataFolder().toPath();
     }
 
+    @Override
+    public String getPluginVersion() {
+        return this.getDescription().getVersion();
+    }
+
     public BungeeTpPlugin getPlugin() {
         return this.plugin;
     }

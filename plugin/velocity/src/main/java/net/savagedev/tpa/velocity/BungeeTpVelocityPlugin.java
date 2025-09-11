@@ -149,6 +149,11 @@ public class BungeeTpVelocityPlugin implements BungeeTpPlatform {
         return this.dataPath;
     }
 
+    @Override
+    public String getPluginVersion() {
+        return BuildParameters.VERSION;
+    }
+
     public ProxyServer getServer() {
         return this.server;
     }

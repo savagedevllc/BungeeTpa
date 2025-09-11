@@ -28,4 +28,6 @@ public interface BungeeTpPlatform {
     Logger getLogger();
 
     Path getDataPath();
+
+    String getPluginVersion();
 }
