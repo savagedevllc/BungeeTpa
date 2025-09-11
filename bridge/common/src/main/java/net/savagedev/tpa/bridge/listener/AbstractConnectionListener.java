@@ -26,10 +26,8 @@ public class AbstractConnectionListener {
                     return;
                 }
 
-                if (updateInfo.isUpdateAvailable(this.platform.getPluginVersion())) {
+                if (updateInfo.isUpdateAvailable(this.platform.getPluginVersion()) && !updateInfo.isPrerelease()) {
                     player.sendMessage("&a[BungeeTP] A new version is available (" + updateInfo.getTag() + ") at: &n" + updateInfo.getDownloadUrl());
-                } else {
-                    player.sendMessage("&a[BungeeTP] You are running the latest version of BungeeTP! Enjoy :)");
                 }
             });
         }

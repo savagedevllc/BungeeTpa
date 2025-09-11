@@ -28,7 +28,7 @@ public class BungeeTpBridgePlugin {
         this.platform.scheduleAsync(() -> {
             final Info updateInfo = this.updateChecker.checkForUpdateAsync().join();
 
-            if (updateInfo.isUpdateAvailable(this.platform.getPluginVersion())) {
+            if (updateInfo.isUpdateAvailable(this.platform.getPluginVersion()) && !updateInfo.isPrerelease()) {
                 this.platform.getLogger().info("A new version is available (" + updateInfo.getTag() + ") at: " + updateInfo.getDownloadUrl());
             } else {
                 this.platform.getLogger().info("You are running the latest version of BungeeTP! Enjoy :)");
