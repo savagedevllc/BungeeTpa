@@ -71,7 +71,7 @@ public class UpdateChecker {
         }
 
         return new Info(container.get("name").getAsString(), container.get("body").getAsString(),
-                container.get("url").getAsString(), container.get("prerelease").getAsBoolean(),
+                container.get("html_url").getAsString(), container.get("prerelease").getAsBoolean(),
                 container.get("tag_name").getAsString());
     }
 

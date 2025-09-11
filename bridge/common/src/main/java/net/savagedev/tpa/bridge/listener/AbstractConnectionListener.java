@@ -27,7 +27,7 @@ public class AbstractConnectionListener {
                 }
 
                 if (updateInfo.isUpdateAvailable(this.platform.getPluginVersion())) {
-                    player.sendMessage("&aA new version is available (" + updateInfo.getTag() + ") at: &n" + updateInfo.getDownloadUrl());
+                    player.sendMessage("&a[BungeeTP] A new version is available (" + updateInfo.getTag() + ") at: &n" + updateInfo.getDownloadUrl());
                 } else {
                     player.sendMessage("&a[BungeeTP] You are running the latest version of BungeeTP! Enjoy :)");
                 }
