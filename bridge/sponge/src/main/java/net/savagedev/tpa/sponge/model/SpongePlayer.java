@@ -62,6 +62,11 @@ public class SpongePlayer implements BungeeTpPlayer {
     }
 
     @Override
+    public boolean hasPermission(String permission) {
+        return this.player.hasPermission(permission);
+    }
+
+    @Override
     public UUID getUniqueId() {
         return this.player.uniqueId();
     }

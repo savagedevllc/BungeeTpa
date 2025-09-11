@@ -43,7 +43,6 @@ public class TpCommand implements BungeeTpCommand {
 
         final Optional<ProxyPlayer<?, ?>> targetPlayer = this.plugin.getPlayer(target);
 
-        // TODO: Permission checks.
         if (targetPlayer.isEmpty() || targetPlayer.get().isHidden()) {
             final Optional<Server<?>> targetServer = this.plugin.getServerManager().getOrLoad(target);
             if (targetServer.isPresent()) {
@@ -99,7 +98,7 @@ public class TpCommand implements BungeeTpCommand {
                     }
                 }
 
-                this.teleportCoords(player, targetServer.get(), worldName, x, y, z, pitch, yaw);
+                this.teleportCoords(player, targetServer.get(), worldName, x, y, z, yaw, pitch);
             } else { // If the target server does not exist:
                 String worldName = null;
                 int argOffset = 0;
@@ -122,7 +121,7 @@ public class TpCommand implements BungeeTpCommand {
                         yaw = Float.parseFloat(args[4 + argOffset]);
                     }
 
-                    this.teleportCoords(player, player.getCurrentServer(), worldName, x, y, z, pitch, yaw);
+                    this.teleportCoords(player, player.getCurrentServer(), worldName, x, y, z, yaw, pitch);
                 } catch (NumberFormatException ignored) {
                     Lang.UNKNOWN_PLAYER.send(player, new Placeholder("%player%", target));
                 }

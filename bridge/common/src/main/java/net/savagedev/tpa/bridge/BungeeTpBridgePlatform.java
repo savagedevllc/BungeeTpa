@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public interface BungeeTpBridgePlatform {
     void scheduleAsync(Runnable runnable, long delay, long period);
@@ -20,7 +21,7 @@ public interface BungeeTpBridgePlatform {
 
     BungeeTpPlayer getBungeeTpPlayer(UUID uuid);
 
-    BungeeTpPlayer getABungeeTpPlayer();
+    Optional<BungeeTpPlayer> getAnyBungeeTpPlayer();
 
     Map<UUID, TeleportTarget> getTpCache();
 
@@ -34,9 +35,13 @@ public interface BungeeTpBridgePlatform {
 
     Collection<UUID> getWhitelist();
 
+    String getPluginVersion();
+
     String getVersion();
 
     String getSoftwareName();
+
+    Logger getLogger();
 
     boolean isWhitelisted();
 

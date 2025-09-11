@@ -17,6 +17,7 @@ import org.bstats.sponge.Metrics;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.User;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
@@ -100,8 +101,8 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
-    public BungeeTpPlayer getABungeeTpPlayer() {
-        return this.getBungeeTpPlayer(Sponge.server().onlinePlayers().iterator().next().uniqueId());
+    public Optional<BungeeTpPlayer> getAnyBungeeTpPlayer() {
+        return Sponge.server().onlinePlayers().stream().findAny().map(ServerPlayer::uniqueId).map(this::getBungeeTpPlayer);
     }
 
     @Override
@@ -143,6 +144,11 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
+    public String getPluginVersion() {
+        return "";
+    }
+
+    @Override
     public String getVersion() {
         return this.container.metadata().version().toString();
     }
@@ -153,6 +159,11 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     }
 
     @Override
+    public java.util.logging.Logger getLogger() {
+        return null;
+    }
+
+    @Override
     public boolean isWhitelisted() {
         return Sponge.server().isWhitelistEnabled();
     }
@@ -160,5 +171,9 @@ public class BungeeTpSpongePlugin implements BungeeTpBridgePlatform {
     @Override
     public int getMaxPlayers() {
         return Sponge.server().maxPlayers();
+    }
+
+    public BungeeTpBridgePlugin getPlugin() {
+        return this.plugin;
     }
 }

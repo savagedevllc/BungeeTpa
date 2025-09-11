@@ -23,11 +23,15 @@ import net.savagedev.tpa.common.messaging.messages.MessageRequestTeleportPlayer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 
 public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
     private static final Map<String, Function<JsonObject, Message>> DECODER_FUNCTIONS = new HashMap<>();
+
+    private final Queue<Message> messageQueue = new ConcurrentLinkedDeque<>();
 
     static {
         DECODER_FUNCTIONS.put(MessageRequestTeleportPlayer.class.getSimpleName(), MessageRequestTeleportPlayer::deserialize);
@@ -43,6 +47,22 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
     public BungeeTpBridgeMessenger(BungeeTpBridgePlatform platform) {
         super(DECODER_FUNCTIONS);
         this.platform = platform;
+    }
+
+    @Override
+    public void flushMessageQueue() {
+        if (this.platform.getAnyBungeeTpPlayer().isEmpty()) {
+            throw new IllegalStateException("message queue cannot be flushed if there are no players online");
+        }
+
+        Message message;
+        while ((message = this.messageQueue.poll()) != null) {
+            this.sendData(message);
+        }
+    }
+
+    protected void queueMessage(Message message) {
+        this.messageQueue.add(message);
     }
 
     @Override
@@ -107,7 +127,7 @@ public abstract class BungeeTpBridgeMessenger<T> extends AbstractMessenger<T> {
 
         final Optional<AbstractEconomyHook> optionalEconomy = this.platform.getEconomyProvider();
 
-        if (!optionalEconomy.isPresent()) {
+        if (optionalEconomy.isEmpty()) {
             return;
         }
 

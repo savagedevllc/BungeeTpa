@@ -14,6 +14,8 @@ import org.spongepowered.api.network.channel.ChannelBuf;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
 import org.spongepowered.api.network.channel.raw.play.RawPlayDataHandler;
 
+import java.util.Optional;
+
 public class SpongePluginMessenger extends BungeeTpBridgeMessenger<BungeeTpPlayer> implements RawPlayDataHandler<ServerSideConnection> {
     private static final ResourceKey CHANNEL_KEY = ResourceKey.resolve(ChannelConstants.CHANNEL_NAME);
 
@@ -42,12 +44,15 @@ public class SpongePluginMessenger extends BungeeTpBridgeMessenger<BungeeTpPlaye
 
     @Override
     public void sendData(BungeeTpPlayer recipient, Message message) {
-        if (recipient == null) {
-            recipient = this.plugin.getABungeeTpPlayer();
-        }
-
-        this.channel.play().sendTo((((SpongePlayer) recipient).getHandle()),
-                buf -> buf.writeString(message.serialize()));
+        Optional.ofNullable(recipient)
+                .or(this.plugin::getAnyBungeeTpPlayer)
+                .ifPresentOrElse(
+                        player -> this.channel.play().sendTo(
+                                ((SpongePlayer) player).getHandle(),
+                                buf -> buf.writeString(message.serialize())
+                        ),
+                        () -> super.queueMessage(message)
+                );
     }
 
     @Override

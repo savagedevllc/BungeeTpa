@@ -32,7 +32,8 @@ public abstract class AbstractConnectionListener {
         final Server<?> server = this.plugin.getServerManager().getOrLoad(serverId)
                 .orElseThrow(() -> new IllegalStateException("Server not loaded."));
 
-        this.plugin.getTeleportManager().completeTeleportToCoords(player);
+        // We delay this to take priority over Essentials (or another plugin) force spawn on join.
+        this.plugin.getPlatform().scheduleTaskDelayed(() -> this.plugin.getTeleportManager().completeTeleportToCoords(player), 125L);
 
         this.plugin.getPlatform().scheduleTaskDelayed(() -> {
             if (server.hasSentBasicInfo()) {

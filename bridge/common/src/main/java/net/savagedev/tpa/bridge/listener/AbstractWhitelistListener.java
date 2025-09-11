@@ -9,8 +9,12 @@ import java.util.UUID;
 public class AbstractWhitelistListener {
     private final BungeeTpBridgePlatform platform;
 
+    private boolean lastKnownWhitelistState;
+
     public AbstractWhitelistListener(BungeeTpBridgePlatform platform) {
         this.platform = platform;
+
+        this.lastKnownWhitelistState = platform.isWhitelisted();
     }
 
     protected void handleWhitelistAddEvent(UUID uniqueId) {
@@ -22,6 +26,10 @@ public class AbstractWhitelistListener {
     }
 
     protected void handleWhitelistStatusChange(boolean newStatus) {
-        this.platform.getMessenger().sendData(new MessageWhitelistInfo(newStatus, Action.STATUS_CHANGE, null));
+        // We only want to send a status change if the whitelist status actually changed.
+        if (newStatus != this.lastKnownWhitelistState) {
+            this.platform.getMessenger().sendData(new MessageWhitelistInfo(newStatus, Action.STATUS_CHANGE, null));
+            this.lastKnownWhitelistState = newStatus;
+        }
     }
 }

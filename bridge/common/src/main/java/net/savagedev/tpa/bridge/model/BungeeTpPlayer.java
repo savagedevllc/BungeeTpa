@@ -14,5 +14,7 @@ public interface BungeeTpPlayer extends TeleportTarget {
 
     void sendMessage(String message);
 
+    boolean hasPermission(String permission);
+
     UUID getUniqueId();
 }

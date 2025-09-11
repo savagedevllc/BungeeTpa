@@ -120,6 +120,11 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
+    public String getPluginVersion() {
+        return this.getDescription().getVersion();
+    }
+
+    @Override
     public String getVersion() {
         return this.getDescription().getVersion();
     }
@@ -140,6 +145,9 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     public BungeeTpPlayer getBungeeTpPlayer(Player player) {
+        if (player == null) {
+            return null;
+        }
         return new SpigotPlayer(player, this);
     }
 
@@ -149,11 +157,10 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     }
 
     @Override
-    public BungeeTpPlayer getABungeeTpPlayer() {
-        return this.getBungeeTpPlayer(this.getServer().getOnlinePlayers()
-                .iterator()
-                .next()
-                .getUniqueId());
+    public Optional<BungeeTpPlayer> getAnyBungeeTpPlayer() {
+        return this.getServer().getOnlinePlayers().stream().findAny()
+                .map(Player::getUniqueId)
+                .map(this::getBungeeTpPlayer);
     }
 
     @Override
@@ -169,5 +176,9 @@ public class BungeeTpSpigotPlugin extends JavaPlugin implements BungeeTpBridgePl
     @Override
     public String getOfflineUsername(UUID uuid) {
         return this.getServer().getOfflinePlayer(uuid).getName();
+    }
+
+    public BungeeTpBridgePlugin getPlugin() {
+        return this.plugin;
     }
 }

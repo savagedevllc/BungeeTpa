@@ -11,7 +11,7 @@ public class ConnectionListener extends AbstractConnectionListener implements Li
     private final BungeeTpSpigotPlugin plugin;
 
     public ConnectionListener(BungeeTpSpigotPlugin plugin) {
-        super(plugin);
+        super(plugin.getPlugin());
         this.plugin = plugin;
     }
 

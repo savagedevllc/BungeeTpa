@@ -9,7 +9,7 @@ public class ConnectionListener extends AbstractConnectionListener {
     private final BungeeTpSpongePlugin plugin;
 
     public ConnectionListener(BungeeTpSpongePlugin plugin) {
-        super(plugin);
+        super(plugin.getPlugin());
         this.plugin = plugin;
     }
 

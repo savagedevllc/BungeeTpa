@@ -9,6 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
 
 public abstract class AbstractMessenger<T> implements Messenger<T> {

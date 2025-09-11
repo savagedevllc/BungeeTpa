@@ -7,6 +7,8 @@ public interface Messenger<T> {
 
     void shutdown();
 
+    void flushMessageQueue();
+
     void handleIncomingMessage(String serverId, String channel, byte[] bytes);
 
     void sendData(T t, Message message);

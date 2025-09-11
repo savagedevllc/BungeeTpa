@@ -11,6 +11,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Optional;
 
 public class SpigotPluginMessenger extends BungeeTpBridgeMessenger<BungeeTpPlayer> implements PluginMessageListener {
     private final BungeeTpSpigotPlugin plugin;
@@ -42,13 +43,14 @@ public class SpigotPluginMessenger extends BungeeTpBridgeMessenger<BungeeTpPlaye
 
     @Override
     public void sendData(BungeeTpPlayer recipient, Message message) {
-        if (recipient == null) {
-            recipient = this.plugin.getABungeeTpPlayer();
-        }
-        try {
-            recipient.sendData(message);
-        } catch (IOException e) {
-            this.plugin.getLogger().warning("Failed to send plugin message: " + e.getMessage());
-        }
+        Optional.ofNullable(recipient)
+                .or(this.plugin::getAnyBungeeTpPlayer)
+                .ifPresentOrElse(player -> {
+                    try {
+                        player.sendData(message);
+                    } catch (IOException e) {
+                        this.plugin.getLogger().warning("Failed to send plugin message: " + e.getMessage());
+                    }
+                }, () -> super.queueMessage(message));
     }
 }
